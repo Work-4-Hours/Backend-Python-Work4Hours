@@ -1,13 +1,28 @@
-from flask import Flask, render_template
+from flask import Flask
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-import sqlalchemy
+from config import DATABASE_CONNECTION_URI
+
+# Se importan las librerias
 
 from routes.user import user
+from routes.services import services
+
+# Se importan las rutas
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://urz9oici6joy6gog:dMxPboxqGHD4ik5Sv8mu@bgeztpvckg0lxhnhjorg-mysql.services.clever-cloud.com:3306/bgeztpvckg0lxhnhjorg'
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_CONNECTION_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 SQLAlchemy(app)
 
-@app.register_blueprint(user)
+# Se configura app y SQLalchemy
+
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
+
+# Se configuran las políticas de CORS
+
+app.register_blueprint(user)
+app.register_blueprint(services)
+
+# Se obtienen los blueprints de rutas
