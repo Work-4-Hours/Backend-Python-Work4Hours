@@ -1,6 +1,5 @@
 from utils.db import db
 
-
 class Statuses(db.model):
     __tablename__ = 'estados'
     id = db.Column(db.Integer, primary_key=True)

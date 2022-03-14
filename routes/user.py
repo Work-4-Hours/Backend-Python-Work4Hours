@@ -4,6 +4,10 @@ user = Blueprint('user_routes', __name__)
 
 @user.route('/login')
 def user_login():
+    userInfo = request.json
+    name = userInfo["name"]
+    lastName = userInfo["lastName"]
+    phoneNumber = userInfo["phoneNumber"]
     return "Login"
 
 @user.route('/registry')

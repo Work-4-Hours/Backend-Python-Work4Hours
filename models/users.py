@@ -1,6 +1,8 @@
 import email
 from this import d
 from utils.db import db
+from sqlalchemy import Table, Column, Integer, ForeignKey, String
+from sqlalchemy.orm import relationship
 
 class Users(db.model):
     __tablename__ = 'usuarios'
