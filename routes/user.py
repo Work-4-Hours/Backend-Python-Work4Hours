@@ -8,6 +8,7 @@ def user_login():
     name = userInfo["name"]
     lastName = userInfo["lastName"]
     phoneNumber = userInfo["phoneNumber"]
+    
     return "Login"
 
 @user.route('/registry')

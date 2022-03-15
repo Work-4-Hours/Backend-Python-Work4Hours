@@ -1,8 +1,6 @@
-import email
-from this import d
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 
 class Users(db.model):
     __tablename__ = 'usuarios'
@@ -52,7 +50,7 @@ class City(db.model):
     idciudad = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(50), nullable= False)
     iddepartamento = db.Column(db.Integer, ForeignKey('departamentos.iddepartamento'),nullable=False)
-    departamentos = relationship(Departament, backref=backref('departamentos', uselist=True))
+    departamentos = relationship(De, backref=backref('departamentos', uselist=True))
 
     def __init__(self,nombre,iddepartamento):
         self.nombre=nombre
