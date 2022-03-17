@@ -1,11 +1,23 @@
 from flask import Blueprint, json, jsonify, request
-from models.users import Users
+from models.objects import Users
 from utils.db import db
 
 user = Blueprint('user_routes', __name__)
 
+@user.route('/')
+def showUsers():
+    user = Users.searchUserInfo(6)
+    return f"{user}"
+
 @user.route('/login', methods=['POST'])
 def user_login():
+    userInfo = request.json
+    email = userInfo["email"]
+    password = userInfo["password"]
+    return "Login"
+
+@user.route('/registry', methods=['POST'])
+def user_registry():
     userInfo = request.json
     name = userInfo["name"]
     lastName = userInfo["lastName"]
@@ -23,9 +35,5 @@ def user_login():
 
     db.session.add(user)
     db.session.commit()
-    
-    return "Login"
 
-@user.route('/registry')
-def user_registry():
     return "Registry"

@@ -1,5 +1,5 @@
 from utils.db import db
-from sqlalchemy import Table, Column, Integer, ForeignKey, String
+from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
 
 class Departament(db.Model):
@@ -72,6 +72,31 @@ class Users(db.Model):
         self.rol = rol
         self.estado = estado
 
+    def searchUserInfo(id):
+        user = {}
+        query = select(Users).where((Users.idusuario == id))
+        result = db.session.execute(query)
+        for userInfo in result.scalars():
+            user = {
+                "name" : userInfo.nombres,
+                "lastName" : userInfo.apellidos,
+                "email" : userInfo.correo
+            }
+        return user
+
+    def searchAllUsersInfo():
+        users = []
+        query = select(Users)
+        result = db.session.execute(query)
+        for usersInfo in result.scalars():
+            users.append(
+                {
+                    "name" : usersInfo.nombres,
+                    "lastName" : usersInfo.apellidos,
+                    "email" : usersInfo.correo
+                }
+            )
+        return users
 
 class Categories(db.Model):
     __tablename__='categorias'
