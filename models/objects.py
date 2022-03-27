@@ -1,6 +1,7 @@
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
+from jwt_Functions import write_token
 
 class Departament(db.Model):
     __tablename__ = 'departamentos'
@@ -59,7 +60,7 @@ class Users(db.Model):
     estado = db.Column(db.Integer, ForeignKey('estados.id'),nullable = False)
     estados = relationship(Statuses, backref=backref('usuarios', uselist=True))
 
-    def __init__(self,nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad,rol,estado):
+    def __init__(self,nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad):
         self.nombres= nombres
         self.apellidos = apellidos
         self.celular = celular
@@ -69,20 +70,29 @@ class Users(db.Model):
         self.fnac = fnac
         self.fotop = fotop
         self.ciudad = ciudad
-        self.rol = rol
-        self.estado = estado
+        self.rol = 1
+        self.estado = 1
 
-    def searchUserInfo(id):
+    def searchUserInfo(email,password):
         user = {}
-        query = select(Users).where((Users.idusuario == id))
+        query = select(Users).where((Users.correo == email and Users.contrasenna == password))
         result = db.session.execute(query)
         for userInfo in result.scalars():
             user = {
+                "id" : userInfo.idusuario,
                 "name" : userInfo.nombres,
                 "lastName" : userInfo.apellidos,
-                "email" : userInfo.correo
+                "email" : userInfo.correo,
+                "status" : userInfo.estado,
+                "rol" : userInfo.rol,
+                "userPicture" : userInfo.fotop,
             }
-        return user
+
+        if (user):
+            token = str(write_token(user)).split("'")[1]
+            return {"token":token}
+        else:
+            return {"exist":False}
 
     def searchAllUsersInfo():
         users = []

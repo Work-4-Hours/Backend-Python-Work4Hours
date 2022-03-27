@@ -1,3 +1,5 @@
+from lib2to3.pgen2 import token
+from re import search
 from flask import Blueprint, json, jsonify, request
 from models.objects import Users
 from utils.db import db
@@ -6,7 +8,7 @@ user = Blueprint('user_routes', __name__)
 
 @user.route('/')
 def showUsers():
-    user = Users.searchUserInfo(6)
+    user = Users.searchAllUsersInfo()
     return f"{user}"
 
 @user.route('/login', methods=['POST'])
@@ -14,7 +16,10 @@ def user_login():
     userInfo = request.json
     email = userInfo["email"]
     password = userInfo["password"]
-    return "Login"
+
+    userInfo = Users.searchUserInfo(email,password)
+
+    return jsonify(userInfo)
 
 @user.route('/registry', methods=['POST'])
 def user_registry():
@@ -28,10 +33,8 @@ def user_registry():
     birthDate = userInfo["birthDate"]
     picture = userInfo["picture"]
     city = userInfo["city"]
-    rol = userInfo["rol"]
-    status = userInfo["status"]
 
-    user = Users(name,lastName,phoneNumber,address,email,password,birthDate,picture,city,rol,status)
+    user = Users(name,lastName,phoneNumber,address,email,password,birthDate,picture,city)
 
     db.session.add(user)
     db.session.commit()
