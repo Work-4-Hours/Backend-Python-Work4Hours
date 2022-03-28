@@ -73,7 +73,8 @@ class Users(db.Model):
         self.rol = 1
         self.estado = 1
 
-    def searchUserInfo(email,password):
+    #function to validate existance of an user in db: 
+    def validateExistantUser(email,password):
         user = {}
         query = select(Users).where((Users.correo == email and Users.contrasenna == password))
         result = db.session.execute(query)
@@ -85,15 +86,31 @@ class Users(db.Model):
                 "email" : userInfo.correo,
                 "status" : userInfo.estado,
                 "rol" : userInfo.rol,
-                "userPicture" : userInfo.fotop,
+                "userPicture" : userInfo.fotop
             }
+        db.session.commit()
+        return user
 
+    def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad):
+        user = Users.validateExistantUser(correo,contrasenna)
+        if(bool(user) == False):
+            newUser = Users(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad)
+            db.session.add(newUser)
+            db.session.commit()
+            return {"exist": "new User created"}
+        else:
+            return {"exist": "User already exist"}
+
+    #Function to look for a user in DB and take his info:
+    def searchUserInfo(email,password):
+        user = Users.validateExistantUser(email,password)
         if (user):
             token = str(write_token(user)).split("'")[1]
             return {"token":token}
         else:
             return {"exist":False}
 
+    #Function to search all users in the app
     def searchAllUsersInfo():
         users = []
         query = select(Users)
@@ -106,6 +123,9 @@ class Users(db.Model):
                     "email" : usersInfo.correo
                 }
             )
+
+        db.session.commit()
+
         return users
 
 class Categories(db.Model):

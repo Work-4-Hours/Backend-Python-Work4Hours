@@ -1,5 +1,3 @@
-from lib2to3.pgen2 import token
-from re import search
 from flask import Blueprint, json, jsonify, request
 from models.objects import Users
 from utils.db import db
@@ -34,9 +32,6 @@ def user_registry():
     picture = userInfo["picture"]
     city = userInfo["city"]
 
-    user = Users(name,lastName,phoneNumber,address,email,password,birthDate,picture,city)
+    user = Users.validateRegistry(name,lastName,phoneNumber,address,email,password,birthDate,picture,city)
 
-    db.session.add(user)
-    db.session.commit()
-
-    return "Registry"
+    return jsonify(user)
