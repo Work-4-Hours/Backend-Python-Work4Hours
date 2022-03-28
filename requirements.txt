@@ -6,7 +6,6 @@ cffi==1.14.6
 charset-normalizer==2.0.6
 click==8.0.4
 colorama==0.4.4
-cors==1.0.1
 cryptography==36.0.2
 distlib==0.3.2
 filelock==3.0.12
