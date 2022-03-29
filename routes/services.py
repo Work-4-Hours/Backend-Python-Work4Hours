@@ -1,7 +1,7 @@
 from distutils.log import info
 from re import search
 from flask import Blueprint, json, jsonify, request, session, render_template
-from models.objects import Services
+from models.Services import Services
 from utils.db import db
 
 
@@ -28,17 +28,17 @@ def user_registry():
     return "Service registry"
 
 
-@services.route('/showServices')
-def showServices():
-    services = Services.searchAllServicesInfo()
-    return f"{services}"
+# @services.route('/showServices')
+# def showServices():
+#     # services = Services.searchAllServicesInfo()
+#     # return f"{services}"
 
-@services.route('/searchServices')
-def search():
-    serviceInfo = request.json
-    serviceName = serviceInfo["serviceName"]
-    serviceUser = serviceInfo["serviceUser"]
+# @services.route('/searchServices')
+# def search():
+#     serviceInfo = request.json
+#     serviceName = serviceInfo["serviceName"]
+#     serviceUser = serviceInfo["serviceUser"]
 
-    serviceInfo = Services.searchServices(serviceName, serviceUser)
+#     serviceInfo = Services.searchServices(serviceName, serviceUser)
 
-    return jsonify(serviceInfo)
+#     return jsonify(serviceInfo)

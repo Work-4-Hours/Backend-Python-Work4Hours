@@ -15,7 +15,7 @@ def user_login():
     email = userInfo["email"]
     password = userInfo["password"]
 
-    userInfo = Users.searchUserInfo(email,password)
+    userInfo = Users.login(email,password)
 
     return jsonify(userInfo)
 

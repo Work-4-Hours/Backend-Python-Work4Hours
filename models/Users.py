@@ -45,19 +45,22 @@ class Users(db.Model):
         result = db.session.execute(query)
         for userInfo in result.scalars():
             user = {
-                "id" : userInfo.idusuario,
                 "name" : userInfo.nombres,
                 "lastName" : userInfo.apellidos,
                 "email" : userInfo.correo,
                 "status" : userInfo.estado,
                 "rol" : userInfo.rol,
                 "userPicture" : userInfo.fotop
+            },
+            userId = {
+                "id" : userInfo.idusuario
             }
+
         db.session.commit()
-        return user
+        return user, userId
 
     def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad):
-        user = Users.getExistantUser(correo,contrasenna)
+        user, userId = Users.getExistantUser(correo,contrasenna)
         if(bool(user) == False):
             newUser = Users(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad)
             db.session.add(newUser)
@@ -68,10 +71,10 @@ class Users(db.Model):
 
     #Function to look for a user in DB and take his info:
     def login(email,password):
-        user = Users.getExistantUser(email,password)
+        user, userId = Users.getExistantUser(email,password)
         if (user):
-            token = str(write_token(user.id)).split("'")[1]
-            return {"token":token, "userInfo":user}
+            token = str(write_token(userId)).split("'")[1]
+            return {"token":token, "info":user}
         else:
             return {"exist":False}
 
