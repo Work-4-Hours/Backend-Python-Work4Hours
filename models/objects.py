@@ -205,6 +205,7 @@ class Services(db.Model):
         self.foto=foto
         self.usuario=usuario
 
+
 class Services_reports(db.Model):
     __tablename__ = 'servicio_reportes'
     id = db.Column(db.Integer, primary_key=True)

@@ -1,6 +1,9 @@
-from flask import Blueprint, json, jsonify, request, session
-from models.objects import  Services
+from distutils.log import info
+from re import search
+from flask import Blueprint, json, jsonify, request, session, render_template
+from models.objects import Services
 from utils.db import db
+
 
 services = Blueprint('service_routes', __name__)
 
@@ -23,4 +26,8 @@ def user_registry():
     serviceUser = serviceInfo["serviceUser"]
 
     return "Service registry"
+
+
+
+
 
