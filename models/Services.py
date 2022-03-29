@@ -1,3 +1,4 @@
+from unittest import result
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
@@ -31,3 +32,22 @@ class Services(db.Model):
         self.descripcion=descripción
         self.foto=foto
         self.usuario=usuario
+
+    
+    def searchAllServicesInfo(nombre):
+        services = {}
+        query = select(Services).where(Services.nombre.like(services)).all()
+        result = db.session.execute(query)
+        if (bool(services) == True):
+            for serviceInfo in result.scalars():
+                services.append(
+                    {
+                        "name": serviceInfo.nombre
+                    }
+                )
+            db.session.commit()
+
+            return services
+        
+        else:
+            return {"Coincidence": "No results found"}
