@@ -1,6 +1,9 @@
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
+from models.Categories import Categories
+from models.Statuses import Statuses
+from models.Users import Users
 
 
 class Services(db.Model):

@@ -6,6 +6,7 @@ from models.Rol import Rol
 from models.Statuses import Statuses
 from jwt_Functions import write_token
 
+
 class Users(db.Model):
     __tablename__ = 'usuarios'
     idusuario = db.Column(db.Integer, primary_key=True)

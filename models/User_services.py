@@ -1,6 +1,8 @@
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
+from models.Users import Users
+from models.Report import Report
 
 
 class User_services(db.Model):

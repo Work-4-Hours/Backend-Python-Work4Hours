@@ -1,6 +1,7 @@
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
+from models.Departament import Departament
 
 class City(db.Model):
     __tablename__ = 'ciudades'

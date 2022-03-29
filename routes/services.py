@@ -28,6 +28,17 @@ def user_registry():
     return "Service registry"
 
 
+@services.route('/showServices')
+def showServices():
+    services = Services.searchAllServicesInfo()
+    return f"{services}"
 
+@services.route('/searchServices')
+def search():
+    serviceInfo = request.json
+    serviceName = serviceInfo["serviceName"]
+    serviceUser = serviceInfo["serviceUser"]
 
+    serviceInfo = Services.searchServices(serviceName, serviceUser)
 
+    return jsonify(serviceInfo)
