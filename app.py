@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from config import DATABASE_CONNECTION_URI
-import config
+
 
 # Se importan las librerias
 
@@ -28,6 +28,3 @@ app.register_blueprint(services)
 
 # Se obtienen los blueprints de rutas
 
-
-if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8000, debug=True)
