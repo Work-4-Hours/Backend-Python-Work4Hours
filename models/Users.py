@@ -1,6 +1,10 @@
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
+from models.City import City
+from models.Rol import Rol
+from models.Statuses import Statuses
+from jwt_Functions import write_token
 
 class Users(db.Model):
     __tablename__ = 'usuarios'
@@ -34,7 +38,7 @@ class Users(db.Model):
         self.estado = 1
 
     #function to validate existance of an user in db: 
-    def validateExistantUser(email,password):
+    def getExistantUser(email,password):
         user = {}
         query = select(Users).where((Users.correo == email and Users.contrasenna == password))
         result = db.session.execute(query)
@@ -52,7 +56,7 @@ class Users(db.Model):
         return user
 
     def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad):
-        user = Users.validateExistantUser(correo,contrasenna)
+        user = Users.getExistantUser(correo,contrasenna)
         if(bool(user) == False):
             newUser = Users(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad)
             db.session.add(newUser)
@@ -62,11 +66,11 @@ class Users(db.Model):
             return {"exist": "User already exist"}
 
     #Function to look for a user in DB and take his info:
-    def searchUserInfo(email,password):
-        user = Users.validateExistantUser(email,password)
+    def login(email,password):
+        user = Users.getExistantUser(email,password)
         if (user):
-            token = str(write_token(user)).split("'")[1]
-            return {"token":token}
+            token = str(write_token(user.id)).split("'")[1]
+            return {"token":token, "userInfo":user}
         else:
             return {"exist":False}
 
