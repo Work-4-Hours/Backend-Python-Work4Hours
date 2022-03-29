@@ -2,6 +2,7 @@ from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
 
+
 class Users(db.Model):
     __tablename__ = 'usuarios'
     idusuario = db.Column(db.Integer, primary_key=True)
