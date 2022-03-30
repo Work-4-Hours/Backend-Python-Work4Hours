@@ -1,3 +1,4 @@
+from unicodedata import name
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
@@ -22,11 +23,11 @@ class Services(db.Model):
     usuario = db.Column(db.Integer, ForeignKey('usuarios.idusuario'),nullable=False)
     usuarios = relationship(Users, backref=backref('servicios', uselist=True))
     apelacion = db.Column(db.Integer,ForeignKey('apelaciones.idapelacion'),nullable=True)
-    apelaciones = relationship(Appeals, backref= backref('servicios'),useList= True)
+    apelaciones = relationship(Appeals, backref= backref('servicios'),uselist= True)
     calificacion = db.Column(db.Float(), nullable= True)
 
 
-    def __init__(self, idcategoria, nombre, estado, tipo, precio, descripción, foto, usuario):
+    def __init__(self, idcategoria, nombre, estado, tipo, precio, descripción, foto, usuario, apelacion, calificacion):
         self.idcategoria=idcategoria
         self.nombre=nombre
         self.estado=estado
@@ -35,6 +36,8 @@ class Services(db.Model):
         self.descripcion=descripción
         self.foto=foto
         self.usuario=usuario
+        self.apelacion=apelacion
+        self.calificacion=calificacion
 
     
     def validateService(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario):
@@ -47,9 +50,9 @@ class Services(db.Model):
 
     def searchAllServicesInfo(nombre):
         services = []
-        query = db.session.query(services).filter(Services.nombre.like('nombre%'))
+        query = db.session.query(services).filter(Services.nombre == nombre('nombre'))
         result = db.session.execute(query)
-        if (bool(services) == True):
+        if (services):
             for serviceInfo in result.scalars():
                 services.append(
                     {
