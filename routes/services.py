@@ -13,31 +13,27 @@ def showServices():
     
     return f"HOLA"
 
-@services.route('/serviceRegistry')
-def user_registry():
+@services.route('/serviceRegistry', methods=['POST'])
+def service_registry():
     serviceInfo = request.json
-    serviceCategories = serviceInfo["serviceCategories"]
-    serviceName = serviceInfo["serviceName"]
-    serviceStatuses = serviceInfo["serviceStatuses"]
-    serviceType = serviceInfo["serviceType"]
-    servicePrice = serviceInfo["servicePrice"]
-    serviceDescription = serviceInfo["serviceDescription"]
-    servicePhoto = serviceInfo["servicePhoto"]
-    serviceUser = serviceInfo["serviceUser"]
+    categories = serviceInfo["categories"]
+    name = serviceInfo["name"]
+    statuses = serviceInfo["statuses"]
+    type = serviceInfo["type"]
+    price = serviceInfo["price"]
+    description = serviceInfo["description"]
+    photo = serviceInfo["photo"]
+    user = serviceInfo["user"]
 
-    return "Service registry"
+    service = Services.validateService(categories,name,statuses,type,price,description,photo,user)
+    return jsonify(service)
 
-
-# @services.route('/showServices')
-# def showServices():
-#     services = Services.searchAllServicesInfo()
-#     return f"{services}"
 
 @services.route('/searchServices')
 def search():
-    serviceInfo = request.json
-    serviceName = serviceInfo["serviceName"]
+    serviceInfo = request.json  
+    nombre = serviceInfo["nombre"]
 
-    serviceInfo = Services.searchAllServicesInfo(serviceName)
+    serviceInfo = Services.searchAllServicesInfo(nombre)
 
     return jsonify(serviceInfo)
