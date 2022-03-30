@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship, backref
 from models.Categories import Categories
 from models.Statuses import Statuses
 from models.Users import Users
+from models.Appeals import Appeals
 
 
 class Services(db.Model):
@@ -20,6 +21,8 @@ class Services(db.Model):
     foto = db.Column(db.String(500), nullable=False)
     usuario = db.Column(db.Integer, ForeignKey('usuarios.idusuario'),nullable=False)
     usuarios = relationship(Users, backref=backref('servicios', uselist=True))
+    apelacion = db.Column(db.Integer,ForeignKey('apelaciones.idapelacion'),nullable=True)
+    apelaciones = relationship(Appeals, backref= backref('servicios'),useList= True)
 
 
     def __init__(self, idcategoria, nombre, estado, tipo, precio, descripción, foto, usuario):
