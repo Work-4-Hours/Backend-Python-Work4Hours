@@ -40,8 +40,9 @@ class Users(db.Model):
 
     #function to validate existance of an user in db: 
     def getExistantUser(email,password):
+        userId = {}
         user = {}
-        query = select(Users).where((Users.correo == email and Users.contrasenna == password))
+        query = db.session.query(Users).filter(Users.correo == email).filter(Users.contrasenna == password)
         result = db.session.execute(query)
         for userInfo in result.scalars():
             user = {
@@ -55,7 +56,6 @@ class Users(db.Model):
             userId = {
                 "id" : userInfo.idusuario
             }
-
         db.session.commit()
         return user, userId
 
@@ -88,7 +88,8 @@ class Users(db.Model):
                 {
                     "name" : usersInfo.nombres,
                     "lastName" : usersInfo.apellidos,
-                    "email" : usersInfo.correo
+                    "email" : usersInfo.correo,
+                    "contrasenna" : usersInfo.contrasenna
                 }
             )
 
