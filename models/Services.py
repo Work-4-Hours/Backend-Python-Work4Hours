@@ -1,5 +1,5 @@
 from utils.db import db
-from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
+from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
 from models.Categories import Categories
 from models.Statuses import Statuses
@@ -23,6 +23,7 @@ class Services(db.Model):
     usuarios = relationship(Users, backref=backref('servicios', uselist=True))
     apelacion = db.Column(db.Integer,ForeignKey('apelaciones.idapelacion'),nullable=True)
     apelaciones = relationship(Appeals, backref= backref('servicios'),useList= True)
+    calificacion = db.Column(db.Float(), nullable= True)
 
 
     def __init__(self, idcategoria, nombre, estado, tipo, precio, descripción, foto, usuario):
