@@ -1,3 +1,4 @@
+from contextlib import nullcontext
 from unicodedata import name
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select
@@ -53,12 +54,12 @@ class Services(db.Model):
             for serviceInfo in result.scalars():
                 services.append(
                     {
-                        "name": serviceInfo.name
+                        "name": serviceInfo.nombre
                     }
                 )
-            db.session.commit()
+                db.session.commit()
 
-            return services
-        
-        else:
-            return {"Coincidence": "No results found"}
+                return services
+            
+            else:
+                return {"Coincidence": "No results found"}
