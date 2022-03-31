@@ -22,7 +22,7 @@ class Services(db.Model):
     usuario = db.Column(db.Integer, ForeignKey('usuarios.idusuario'),nullable=False)
     usuarios = relationship(Users, backref=backref('servicios', uselist=True))
     apelacion = db.Column(db.Integer,ForeignKey('apelaciones.idapelacion'),nullable=True)
-    apelaciones = relationship(Appeals, backref= backref('servicios'),useList= True)
+    apelaciones = relationship(Appeals, backref= backref('servicios'),uselist= True)
     calificacion = db.Column(db.Float(), nullable= True)
 
 
