@@ -27,7 +27,7 @@ class Services(db.Model):
     calificacion = db.Column(db.Float(), nullable= True)
 
 
-    def __init__(self, idcategoria, nombre, estado, tipo, precio, descripción, foto, usuario, apelacion, calificacion):
+    def __init__(self, idcategoria, nombre, estado, tipo, precio, descripción, foto, usuario):
         self.idcategoria=idcategoria
         self.nombre=nombre
         self.estado=estado
@@ -36,9 +36,6 @@ class Services(db.Model):
         self.descripcion=descripción
         self.foto=foto
         self.usuario=usuario
-        self.apelacion=apelacion
-        self.calificacion=calificacion
-
     
     def validateService(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario):
         newService = Services(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario)
@@ -50,13 +47,13 @@ class Services(db.Model):
 
     def searchAllServicesInfo(nombre):
         services = []
-        query = db.session.query(services).filter(Services.nombre == nombre('nombre'))
+        query = db.session.query(Services).filter(Services.nombre.like(nombre))
         result = db.session.execute(query)
         if (services):
             for serviceInfo in result.scalars():
                 services.append(
                     {
-                        "name": serviceInfo.nombre
+                        "name": serviceInfo.name
                     }
                 )
             db.session.commit()
