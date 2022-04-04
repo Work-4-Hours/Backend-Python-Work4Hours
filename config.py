@@ -12,5 +12,9 @@ database = os.environ['DB_DATABASE']
 DATABASE_CONNECTION_URI = f'mysql://{user}:{password}@{host}/{database}'
 
 key = Fernet.generate_key()
+file = open('key.key', 'wb')
+file.write(key)
+file.close()
 
+print(key,"------------------------------------Hola__________________________")
 F = Fernet(key)
