@@ -46,20 +46,18 @@ class Services(db.Model):
 
 
 
-    def searchAllServicesInfo(nombre):
+    def searchAllServicesInfo(nombreServicio):
         services = []
-        query = db.session.query(Services).filter(Services.nombre.like(nombre))
+        query = db.session.query(Services).filter(Services.nombre.like('%{}%'.format(nombreServicio)))
         result = db.session.execute(query)
-        if (services):
-            for serviceInfo in result.scalars():
-                services.append(
-                    {
-                        "name": serviceInfo.nombre
-                    }
-                )
-                db.session.commit()
-
-                return services
-            
-            else:
-                return {"Coincidence": "No results found"}
+        for serviceInfo in result.scalars():
+            services.append(
+                {
+                    "name": serviceInfo.nombre,
+                    "id" : serviceInfo.idservicio
+                }
+                
+            )
+            db.session.commit()
+        return services
+        
