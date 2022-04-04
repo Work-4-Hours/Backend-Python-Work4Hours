@@ -54,7 +54,10 @@ class Services(db.Model):
             services.append(
                 {
                     "name": serviceInfo.nombre,
-                    "id" : serviceInfo.idservicio
+                    "id" : serviceInfo.idservicio,
+                    "price": serviceInfo.precio,
+                    "photo": serviceInfo.foto,
+                    "user": serviceInfo.usuario
                 }
                 
             )
