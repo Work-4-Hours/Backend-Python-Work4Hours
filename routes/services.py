@@ -33,7 +33,6 @@ def service_registry():
 def search():
     serviceInfo = request.json  
     nombre = serviceInfo["nombre"]
-
     serviceInfo = Services.searchAllServicesInfo(nombre)
 
     return jsonify(serviceInfo)
