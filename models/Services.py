@@ -1,7 +1,6 @@
-from contextlib import nullcontext
-from unicodedata import name
+from unittest import result
 from utils.db import db
-from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select
+from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert
 from sqlalchemy.orm import relationship, backref
 from models.Categories import Categories
 from models.Statuses import Statuses
@@ -63,4 +62,14 @@ class Services(db.Model):
             )
             db.session.commit()
         return services
+
+
+    def addQualification(calificacion):
+        db.session.add(calificacion)
+        db.session.commit()
+        return {"qualification": "Calificación exitosa"}
+
+
+    
+        
         

@@ -35,3 +35,5 @@ def user_registry():
     user = Users.validateRegistry(name,lastName,phoneNumber,address,email,password,birthDate,picture,city)
 
     return jsonify(user)
+
+    
