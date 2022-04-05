@@ -49,8 +49,8 @@ class Users(db.Model):
         key = file.read() 
         file.close()
         F2 = Fernet(key)
-        encodedPassword = password.encode() 
-        return F2.decrypt(encodedPassword).decode('utf-8')
+        EncodedPassword = password.encode()
+        return base64.decode(F2.decrypt(EncodedPassword))
 
     def getDecryptedUserPassword(email):
         decryptedPassword = ""
