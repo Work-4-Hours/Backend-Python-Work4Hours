@@ -1,5 +1,5 @@
 from flask import Blueprint, json, jsonify, request
-from models.objects import Users
+from models.Users import Users
 from utils.db import db
 
 user = Blueprint('user_routes', __name__)
@@ -15,7 +15,7 @@ def user_login():
     email = userInfo["email"]
     password = userInfo["password"]
 
-    userInfo = Users.searchUserInfo(email,password)
+    userInfo = Users.login(email,password)
 
     return jsonify(userInfo)
 

@@ -1,6 +1,9 @@
-from flask import Blueprint, json, jsonify, request, session
-from models.objects import  Services
+from distutils.log import info
+from re import search
+from flask import Blueprint, json, jsonify, request, session, render_template
+from models.Services import Services
 from utils.db import db
+
 
 services = Blueprint('service_routes', __name__)
 
@@ -10,17 +13,27 @@ def showServices():
     
     return f"HOLA"
 
-@services.route('/serviceRegistry')
-def user_registry():
+@services.route('/serviceRegistry', methods=['POST'])
+def service_registry():
     serviceInfo = request.json
-    serviceCategories = serviceInfo["serviceCategories"]
-    serviceName = serviceInfo["serviceName"]
-    serviceStatuses = serviceInfo["serviceStatuses"]
-    serviceType = serviceInfo["serviceType"]
-    servicePrice = serviceInfo["servicePrice"]
-    serviceDescription = serviceInfo["serviceDescription"]
-    servicePhoto = serviceInfo["servicePhoto"]
-    serviceUser = serviceInfo["serviceUser"]
+    categories = serviceInfo["categories"]
+    name = serviceInfo["name"]
+    statuses = serviceInfo["statuses"]
+    type = serviceInfo["type"]
+    price = serviceInfo["price"]
+    description = serviceInfo["description"]
+    photo = serviceInfo["photo"]
+    user = serviceInfo["user"]
 
-    return "Service registry"
+    service = Services.validateService(categories,name,statuses,type,price,description,photo,user)
+    return jsonify(service)
 
+
+@services.route('/searchServices')
+def search():
+    serviceInfo = request.json  
+    nombre = serviceInfo["nombre"]
+
+    serviceInfo = Services.searchAllServicesInfo(nombre)
+
+    return jsonify(serviceInfo)

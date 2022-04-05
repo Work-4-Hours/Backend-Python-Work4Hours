@@ -3,7 +3,6 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from config import DATABASE_CONNECTION_URI
 
-
 # Se importan las librerias
 
 from routes.user import user
@@ -27,4 +26,3 @@ app.register_blueprint(user)
 app.register_blueprint(services)
 
 # Se obtienen los blueprints de rutas
-
