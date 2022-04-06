@@ -19,6 +19,14 @@ def user_login():
 
     return jsonify(userInfo)
 
+@user.route('/encryption', methods=['POST'])
+def decryption_test():
+    userInfo = request.json
+    email = userInfo["email"]
+    password = userInfo["password"]
+    decrypted = Users.getDecryptedUserPassword(password)
+    return jsonify(decrypted)
+
 @user.route('/registry', methods=['POST'])
 def user_registry():
     userInfo = request.json
@@ -36,3 +44,4 @@ def user_registry():
 
     return jsonify(user)
 
+    

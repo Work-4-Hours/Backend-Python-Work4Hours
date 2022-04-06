@@ -1,5 +1,4 @@
 from distutils.log import info
-from re import search
 from flask import Blueprint, json, jsonify, request, session, render_template
 from models.Services import Services
 from utils.db import db
@@ -33,7 +32,8 @@ def service_registry():
 def search():
     serviceInfo = request.json  
     nombre = serviceInfo["nombre"]
-
     serviceInfo = Services.searchAllServicesInfo(nombre)
 
     return jsonify(serviceInfo)
+
+

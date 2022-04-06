@@ -1,10 +1,12 @@
+from unittest import result
 from utils.db import db
-from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select
+from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert
 from sqlalchemy.orm import relationship, backref
 from models.Categories import Categories
 from models.Statuses import Statuses
 from models.Users import Users
 from models.Appeals import Appeals
+
 
 
 class Services(db.Model):
@@ -35,7 +37,6 @@ class Services(db.Model):
         self.descripcion=descripción
         self.foto=foto
         self.usuario=usuario
-
     
     def validateService(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario):
         newService = Services(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario)
@@ -45,20 +46,26 @@ class Services(db.Model):
 
 
 
-    def searchAllServicesInfo(nombre):
+    def searchAllServicesInfo(nombreServicio):
         services = []
-        query = db.session.query(services).filter(Services.nombre.like('nombre%'))
+        query = db.session.query(Services).filter(Services.nombre.like('%{}%'.format(nombreServicio)))
         result = db.session.execute(query)
-        if (bool(services) == True):
-            for serviceInfo in result.scalars():
-                services.append(
-                    {
-                        "name": serviceInfo.nombre
-                    }
-                )
+        for serviceInfo in result.scalars():
+            services.append(
+                {
+                    "name": serviceInfo.nombre,
+                    "id" : serviceInfo.idservicio,
+                    "price": serviceInfo.precio,
+                    "photo": serviceInfo.foto,
+                    "user": serviceInfo.usuario
+                }
+                
+            )
             db.session.commit()
+        return services
 
-            return services
+
+
+    
         
-        else:
-            return {"Coincidence": "No results found"}
+        
