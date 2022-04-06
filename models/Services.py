@@ -8,6 +8,7 @@ from models.Users import Users
 from models.Appeals import Appeals
 
 
+
 class Services(db.Model):
     __tablename__ = 'servicios'
     idservicio = db.Column(db.Integer, primary_key=True)
@@ -63,11 +64,6 @@ class Services(db.Model):
             db.session.commit()
         return services
 
-
-    def addQualification(calificacion):
-        db.session.add(calificacion)
-        db.session.commit()
-        return {"qualification": "Calificación exitosa"}
 
 
     
