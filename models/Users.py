@@ -6,7 +6,6 @@ from models.City import City
 from models.Rol import Rol
 from models.Statuses import Statuses
 from jwt_Functions import write_token
-from werkzeug.security import check_password_hash
 import os
 from config import F
 
@@ -114,6 +113,7 @@ class Users(db.Model):
         else:
             return {"exist": "User already exist"}
 
+
     #Function to look for a user in DB and take his info:
     def login(email,password):
         user, userId = Users.getExistantUser(email,password)
@@ -122,6 +122,7 @@ class Users(db.Model):
             return {"token":token, "info":user}
         else:
             return {"exist":False}
+
 
     #Function to search all users in the app
     def searchAllUsersInfo():
