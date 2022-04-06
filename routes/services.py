@@ -1,4 +1,5 @@
 from distutils.log import info
+from re import search
 from flask import Blueprint, json, jsonify, request, session, render_template
 from models.Services import Services
 from utils.db import db
@@ -36,4 +37,10 @@ def search():
 
     return jsonify(serviceInfo)
 
+@services.route('/addQualification')
+def addQ():
+    serviceInfo = request.json
+    calificacion = serviceInfo["calificacion"]
+    serviceInfo = Services.addQualification(calificacion)
 
+    return jsonify(serviceInfo)

@@ -1,7 +1,7 @@
-from models.Services import Services
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert
 from sqlalchemy.orm import relationship, backref
+from models.Services import Services
 
 
 class Qualification(db.Model):
