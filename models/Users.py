@@ -67,6 +67,7 @@ class Users(db.Model):
         #     else:
         #         decryptedPassword = True
         # return decryptedPassword 
+        #Hola
 
 
     def encryptPassword(password):
