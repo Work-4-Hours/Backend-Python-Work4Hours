@@ -6,10 +6,10 @@ from models.City import City
 from models.Rol import Rol
 from models.Statuses import Statuses
 from jwt_Functions import write_token
+from werkzeug.security import check_password_hash
 import os
-from cryptography.fernet import Fernet
 from config import F
-from config import key as key2
+
 
 
 
@@ -44,43 +44,60 @@ class Users(db.Model):
         self.rol = 1
         self.estado = 1
 
-    def decrypt(password):
-        file = open('key.key', 'rb') 
-        key = file.read() 
-        file.close()
-        F2 = Fernet(key)
-        EncodedPassword = password.encode()
-        return base64.decode(F2.decrypt(EncodedPassword))
 
-    def getDecryptedUserPassword(email):
-        decryptedPassword = ""
-        queryPassword =select(Users.contrasenna).where(Users.correo == email)
-        passwordResult = db.session.execute(queryPassword)
-        for password in passwordResult.scalars():
-            decryptedPassword = Users.decrypt(password)
+
+    def decryptPassword(password):
+        # EncodedPassword = password.encode("utf-8")
+        # return base64.decode(F.decrypt(EncodedPassword))
+        decryptedPassword = base64.decode(F.decrypt(password))
         return decryptedPassword
+
+    def getDecryptedUserPassword(password):
+        encryptedPassword = Users.encryptPassword(password)
+        print(encryptedPassword, "----------------Encrypted---------------")
+        decryptedPassword = Users.decryptPassword(password)
+        print(decryptedPassword, "----------------Decrypted---------------")
+        return {"decrypted":decryptedPassword},{"encrypted":encryptedPassword}
+        # decryptedPassword = ""
+        # queryPassword =select(Users.contrasenna).where(Users.correo == email)
+        # passwordResult = db.session.execute(queryPassword)
+        # for dbpassword in passwordResult.scalars():
+        #     if (dbpassword):
+        #         decryptedPassword = Users.decrypt(dbpassword,password)
+        #     else:
+        #         decryptedPassword = True
+        # return decryptedPassword 
+
+
+    def encryptPassword(password):
+        encryptedPassword = F.encrypt(password.encode())
+        return encryptedPassword
+
+
+
+
+
+
 
     #function to validate existance of an user in db: 
     def getExistantUser(email,password):
         userId = {}
         user = {}
-        decryptedPassword = Users.getDecryptedUserPassword(email)
-        if(decryptedPassword == password):
-            query = db.session.query(Users).filter(Users.correo == email)
-            result = db.session.execute(query)
-            for userInfo in result.scalars():
-                user = {
-                    "name" : userInfo.nombres,
-                    "lastName" : userInfo.apellidos,
-                    "email" : userInfo.correo,
-                    "status" : userInfo.estado,
-                    "rol" : userInfo.rol,
-                    "userPicture" : userInfo.fotop,
-                },
-                userId = {
-                    "id" : userInfo.idusuario
-                }
-            db.session.commit()
+        query = db.session.query(Users).filter(Users.correo == email)
+        result = db.session.execute(query)
+        for userInfo in result.scalars():
+            user = {
+                "name" : userInfo.nombres,
+                "lastName" : userInfo.apellidos,
+                "email" : userInfo.correo,
+                "status" : userInfo.estado,
+                "rol" : userInfo.rol,
+                "userPicture" : userInfo.fotop,
+            },
+            userId = {
+                "id" : userInfo.idusuario
+            }
+        db.session.commit()
         return user, userId
 
 
