@@ -1,4 +1,5 @@
 import base64
+import string
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
@@ -7,8 +8,8 @@ from models.Rol import Rol
 from models.Statuses import Statuses
 from jwt_Functions import write_token
 import os
-from config import F
-
+from config import salt
+import bcrypt
 
 
 
@@ -44,48 +45,51 @@ class Users(db.Model):
         self.estado = 1
 
 
-
-    def decryptPassword(password):
-        # EncodedPassword = password.encode("utf-8")
-        # return base64.decode(F.decrypt(EncodedPassword))
-        decryptedPassword = base64.decode(F.decrypt(password))
-        return decryptedPassword
-
-    def getDecryptedUserPassword(password):
-        encryptedPassword = Users.encryptPassword(password)
-        print(encryptedPassword, "----------------Encrypted---------------")
-        decryptedPassword = Users.decryptPassword(password)
-        print(decryptedPassword, "----------------Decrypted---------------")
-        return {"decrypted":decryptedPassword},{"encrypted":encryptedPassword}
-        # decryptedPassword = ""
-        # queryPassword =select(Users.contrasenna).where(Users.correo == email)
-        # passwordResult = db.session.execute(queryPassword)
-        # for dbpassword in passwordResult.scalars():
-        #     if (dbpassword):
-        #         decryptedPassword = Users.decrypt(dbpassword,password)
-        #     else:
-        #         decryptedPassword = True
-        # return decryptedPassword 
-        #Hola
+    #Function to decrypt passwords
+    def decryptPassword(password : str, dbHashedPWD: str):
+        encodedPassword = password.encode(encoding='UTF-8')
+        encodedHash = dbHashedPWD.encode(encoding='UTF-8')
+        return bcrypt.checkpw(encodedPassword,encodedHash)
 
 
+    #Funtion to encrypt passwords
     def encryptPassword(password):
-        encryptedPassword = F.encrypt(password.encode())
-        return encryptedPassword
+        encoded = bytes(password.encode(encoding='UTF-8'))
+        return bcrypt.hashpw(encoded,salt)
 
 
-
-
-
+    #Function to get the password from de db and decrypt it if it exist
+    def getDecryptedUserPassword(password : str, email : str) -> bool :
+        decryptedPassword = ""
+        queryPassword =select(Users.contrasenna).where(Users.correo == email)
+        passwordResult = db.session.execute(queryPassword)
+        for dbpassword in passwordResult.scalars():
+            print(dbpassword, "--------------------------------------------")
+            if (dbpassword):
+                decryptedPassword = Users.decryptPassword(password,dbpassword)
+            else:
+                decryptedPassword = False
+        return decryptedPassword 
 
 
     #function to validate existance of an user in db: 
-    def getExistantUser(email,password):
+    def getExistantUser(email,password, type):
         userId = {}
         user = {}
         query = db.session.query(Users).filter(Users.correo == email)
         result = db.session.execute(query)
-        for userInfo in result.scalars():
+        if(result.scalars() and type == 1):
+            if(Users.getDecryptedUserPassword(password,email)):
+                user, userId = Users.getUserInfo(result.scalars())
+        elif(result.scalars() and type == 0):
+            user, userId = Users.getUserInfo(result.scalars())
+        db.session.commit()
+        return user, userId
+
+    def getUserInfo(result):
+        userId = {}
+        user = {}
+        for userInfo in result:
             user = {
                 "name" : userInfo.nombres,
                 "lastName" : userInfo.apellidos,
@@ -97,15 +101,15 @@ class Users(db.Model):
             userId = {
                 "id" : userInfo.idusuario
             }
-        db.session.commit()
-        return user, userId
+        return user,userId
+
 
 
     #Function to decide if the user must be registered
     def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad):
-        user, userId = Users.getExistantUser(correo,contrasenna)
+        user, userId = Users.getExistantUser(correo,contrasenna,0)
         if(bool(user) == False):
-            encryptedPassword = F.encrypt(contrasenna.encode())
+            encryptedPassword = Users.encryptPassword(contrasenna)
             newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad)
             db.session.add(newUser)
             db.session.commit()
@@ -116,7 +120,7 @@ class Users(db.Model):
 
     #Function to look for a user in DB and take his info:
     def login(email,password):
-        user, userId = Users.getExistantUser(email,password)
+        user, userId = Users.getExistantUser(email,password,1)
         if (user):
             token = str(write_token(userId)).split("'")[1]
             return {"token":token, "info":user}

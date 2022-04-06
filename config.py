@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import os
+import bcrypt
 
 load_dotenv()
 
@@ -10,3 +11,6 @@ database = os.environ['DB_DATABASE']
 
 DATABASE_CONNECTION_URI = f'mysql://{user}:{password}@{host}/{database}'
 
+
+
+salt = bcrypt.gensalt(rounds=16)
