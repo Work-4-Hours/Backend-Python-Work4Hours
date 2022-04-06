@@ -1,3 +1,4 @@
+import base64
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
@@ -5,6 +6,11 @@ from models.City import City
 from models.Rol import Rol
 from models.Statuses import Statuses
 from jwt_Functions import write_token
+import os
+from cryptography.fernet import Fernet
+from config import F
+from config import key as key2
+
 
 
 class Users(db.Model):
@@ -15,7 +21,7 @@ class Users(db.Model):
     celular = db.Column(db.String(30), nullable= False)
     direccion = db.Column(db.String(500), nullable= False)
     correo = db.Column(db.String(500), nullable = False)
-    contrasenna = db.Column(db.String(45), nullable= False)
+    contrasenna = db.Column(db.String(150), nullable= False)
     fnac = db.Column(db.Date, nullable= False)
     fotop = db.Column(db.String(500), nullable= True)
     ciudad = db.Column(db.Integer, ForeignKey('ciudades.idciudad'),nullable = False)
@@ -38,31 +44,52 @@ class Users(db.Model):
         self.rol = 1
         self.estado = 1
 
+    def decrypt(password):
+        file = open('key.key', 'rb') 
+        key = file.read() 
+        file.close()
+        F2 = Fernet(key)
+        EncodedPassword = password.encode()
+        return base64.decode(F2.decrypt(EncodedPassword))
+
+    def getDecryptedUserPassword(email):
+        decryptedPassword = ""
+        queryPassword =select(Users.contrasenna).where(Users.correo == email)
+        passwordResult = db.session.execute(queryPassword)
+        for password in passwordResult.scalars():
+            decryptedPassword = Users.decrypt(password)
+        return decryptedPassword
+
     #function to validate existance of an user in db: 
     def getExistantUser(email,password):
         userId = {}
         user = {}
-        query = db.session.query(Users).filter(Users.correo == email).filter(Users.contrasenna == password)
-        result = db.session.execute(query)
-        for userInfo in result.scalars():
-            user = {
-                "name" : userInfo.nombres,
-                "lastName" : userInfo.apellidos,
-                "email" : userInfo.correo,
-                "status" : userInfo.estado,
-                "rol" : userInfo.rol,
-                "userPicture" : userInfo.fotop
-            },
-            userId = {
-                "id" : userInfo.idusuario
-            }
-        db.session.commit()
+        decryptedPassword = Users.getDecryptedUserPassword(email)
+        if(decryptedPassword == password):
+            query = db.session.query(Users).filter(Users.correo == email)
+            result = db.session.execute(query)
+            for userInfo in result.scalars():
+                user = {
+                    "name" : userInfo.nombres,
+                    "lastName" : userInfo.apellidos,
+                    "email" : userInfo.correo,
+                    "status" : userInfo.estado,
+                    "rol" : userInfo.rol,
+                    "userPicture" : userInfo.fotop,
+                },
+                userId = {
+                    "id" : userInfo.idusuario
+                }
+            db.session.commit()
         return user, userId
 
+
+    #Function to decide if the user must be registered
     def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad):
         user, userId = Users.getExistantUser(correo,contrasenna)
         if(bool(user) == False):
-            newUser = Users(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad)
+            encryptedPassword = F.encrypt(contrasenna.encode())
+            newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad)
             db.session.add(newUser)
             db.session.commit()
             return {"exist": "new User created"}
