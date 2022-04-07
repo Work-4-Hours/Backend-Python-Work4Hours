@@ -28,10 +28,10 @@ def service_registry():
     return jsonify(service)
 
 
-@services.route('/searchServices')
+@services.route('/searchServices', methods=['POST'])
 def search():
     serviceInfo = request.json  
-    nombre = serviceInfo["nombre"]
+    nombre = serviceInfo["serviceName"]
     serviceInfo = Services.searchAllServicesInfo(nombre)
 
     return jsonify(serviceInfo)

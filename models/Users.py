@@ -64,7 +64,6 @@ class Users(db.Model):
         queryPassword =select(Users.contrasenna).where(Users.correo == email)
         passwordResult = db.session.execute(queryPassword)
         for dbpassword in passwordResult.scalars():
-            print(dbpassword, "--------------------------------------------")
             if (dbpassword):
                 decryptedPassword = Users.decryptPassword(password,dbpassword)
             else:
