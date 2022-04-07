@@ -1,11 +1,12 @@
 from unittest import result
 from utils.db import db
-from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert
+from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, update
 from sqlalchemy.orm import relationship, backref
 from models.Categories import Categories
 from models.Statuses import Statuses
 from models.Users import Users
 from models.Appeals import Appeals
+
 
 
 
@@ -25,24 +26,25 @@ class Services(db.Model):
     usuarios = relationship(Users, backref=backref('servicios', uselist=True))
     apelacion = db.Column(db.Integer,ForeignKey('apelaciones.idapelacion'),nullable=True)
     apelaciones = relationship(Appeals, backref= backref('servicios'),uselist= True)
-    calificacion = db.Column(db.Float(), nullable= True)
+    calificacion = db.Column(db.Float(), nullable=False)
+         
 
 
-    def __init__(self, idcategoria, nombre, estado, tipo, precio, descripción, foto, usuario):
+    def __init__(self, idcategoria, nombre, estado, tipo, precio, descripcion, foto, usuario):
         self.idcategoria=idcategoria
         self.nombre=nombre
         self.estado=estado
         self.tipo=tipo
         self.precio=precio
-        self.descripcion=descripción
+        self.descripcion=descripcion
         self.foto=foto
         self.usuario=usuario
+        
     
     def validateService(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario):
         newService = Services(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario)
         db.session.add(newService)
         db.session.commit()
-        return {"exists": "Servicio Registrado"}
 
 
 
@@ -64,6 +66,13 @@ class Services(db.Model):
             db.session.commit()
         return services
 
+
+    def addQualification(self):
+        query = update({'calificacion': Services.calificacion})
+        db.session.execute(query)
+        db.session.commit()
+
+        
 
 
     
