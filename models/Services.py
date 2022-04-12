@@ -40,6 +40,23 @@ class Services(db.Model):
         self.foto=foto
         self.usuario=usuario
         
+
+    def getIndexPageServices():
+        services = []
+        query = db.session.query(Services).filter(Services.calificacion >= 4).limit(20).all()
+        result = db.session.execute(query)
+        for serviceInfo in result.scalars():
+            services.append(
+                {
+                    "name": serviceInfo.nombre,
+                    "id" : serviceInfo.idservicio,
+                    "price": serviceInfo.precio,
+                    "photo": serviceInfo.foto,
+                    "user": serviceInfo.usuario
+                }
+            )
+            db.session.commit()
+        return services
     
     def validateService(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario):
         newService = Services(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario)

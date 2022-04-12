@@ -46,7 +46,7 @@ class Users(db.Model):
 
 
     #Function to decrypt passwords
-    def decryptPassword(password : str, dbHashedPWD: str):
+    def decryptPassword(password : str, dbHashedPWD: str) -> bool:
         encodedPassword = password.encode(encoding='UTF-8')
         encodedHash = dbHashedPWD.encode(encoding='UTF-8')
         return bcrypt.checkpw(encodedPassword,encodedHash)
