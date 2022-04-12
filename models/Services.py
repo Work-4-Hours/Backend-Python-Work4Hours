@@ -1,3 +1,4 @@
+from typing_extensions import Self
 from unittest import result
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, update
@@ -6,6 +7,7 @@ from models.Categories import Categories
 from models.Statuses import Statuses
 from models.Users import Users
 from models.Appeals import Appeals
+from jwt_Functions import write_token
 
 
 
@@ -46,17 +48,19 @@ class Services(db.Model):
         query = db.session.query(Services).filter(Services.calificacion >= 4.0).limit(20)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
+            token = str(write_token(serviceInfo.usuario)).split("'")[1]
             services.append(
                 {
                     "name": serviceInfo.nombre,
                     "id" : serviceInfo.idservicio,
                     "price": serviceInfo.precio,
                     "photo": serviceInfo.foto,
-                    "user": serviceInfo.usuario
+                    "user": token
                 }
             )
             db.session.commit()
         return services
+
     
     def validateService(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario):
         newService = Services(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario)
@@ -70,13 +74,14 @@ class Services(db.Model):
         query = db.session.query(Services).filter(Services.nombre.like('%{}%'.format(nombreServicio)))
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
+            token = str(write_token(serviceInfo.usuario)).split("'")[1]
             services.append(
                 {
                     "name": serviceInfo.nombre,
                     "id" : serviceInfo.idservicio,
                     "price": serviceInfo.precio,
                     "photo": serviceInfo.foto,
-                    "user": serviceInfo.usuario
+                    "user": token
                 }
                 
             )

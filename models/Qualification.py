@@ -1,6 +1,7 @@
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.sql import func
 from models.Services import Services
 
 
@@ -16,4 +17,16 @@ class Qualification(db.Model):
         self.calificacion = calificacion
         self.idusuario = idusuario
         self.idservicio = idservicio
+
+    def getQualificationsAverage(serviceId):
+        average = {}
+        query = db.session.query(func.avg(Qualification.calificacion)).filter(Qualification.servicio == serviceId)
+        result = db.session.execute(query)
+        for average in result.scalars():
+            average = {
+                "average": average,
+            }
+        db.session.commit()
+        return average
+
         
