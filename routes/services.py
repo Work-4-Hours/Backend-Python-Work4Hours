@@ -7,11 +7,10 @@ from utils.db import db
 
 services = Blueprint('service_routes', __name__)
 
-@services.route('/asas')
+@services.route('/')
 def showServices():
-
-    
-    return f"HOLA"
+    services = Services.getIndexPageServices()
+    return jsonify(services)
 
 @services.route('/serviceRegistry', methods=['POST'])
 def service_registry():

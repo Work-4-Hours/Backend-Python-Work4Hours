@@ -4,13 +4,6 @@ from utils.db import db
 
 user = Blueprint('user_routes', __name__)
 
-@user.route('/')
-def showUsers():
-
-    user = Users.searchAllUsersInfo()
-
-    return jsonify(user)
-    
 
 @user.route('/login', methods=['POST'])
 def user_login():
