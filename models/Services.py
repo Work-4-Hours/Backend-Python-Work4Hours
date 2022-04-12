@@ -47,7 +47,7 @@ class Services(db.Model):
         query = db.session.query(Services).filter(Services.calificacion >= 4.0).limit(20)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
-            token = str(write_token(serviceInfo.usuario)).split("'")[1]
+            token = str(write_token({"userId" : serviceInfo.usuario})).split("'")[1]
             services.append(
                 {
                     "name": serviceInfo.nombre,
@@ -73,7 +73,7 @@ class Services(db.Model):
         query = db.session.query(Services).filter(Services.nombre.like('%{}%'.format(nombreServicio)))
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
-            token = str(write_token(serviceInfo.usuario)).split("'")[1]
+            token = str(write_token({"userId" : serviceInfo.usuario})).split("'")[1]
             services.append(
                 {
                     "name": serviceInfo.nombre,

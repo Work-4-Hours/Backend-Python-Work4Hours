@@ -2,6 +2,7 @@ from distutils.log import info
 from re import search
 from flask import Blueprint, json, jsonify, request, session, render_template
 from models.Services import Services
+from models.Qualification import Qualification
 from utils.db import db
 
 
@@ -11,6 +12,11 @@ services = Blueprint('service_routes', __name__)
 def showServices():
     services = Services.getIndexPageServices()
     return jsonify(services)
+
+@services.route('/')
+def getAverage():
+    average = Qualification.getQualificationsAverage()
+    return jsonify(average)
 
 @services.route('/serviceRegistry', methods=['POST'])
 def service_registry():
