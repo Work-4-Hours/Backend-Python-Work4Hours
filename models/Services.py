@@ -1,4 +1,3 @@
-from typing_extensions import Self
 from unittest import result
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, update
@@ -58,7 +57,7 @@ class Services(db.Model):
                     "user": token
                 }
             )
-            db.session.commit()
+        db.session.commit()
         return services
 
     
@@ -83,9 +82,9 @@ class Services(db.Model):
                     "photo": serviceInfo.foto,
                     "user": token
                 }
-                
+              
             )
-            db.session.commit()
+        db.session.commit()
         return services
 
 
