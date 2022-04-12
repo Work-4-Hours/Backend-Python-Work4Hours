@@ -29,9 +29,7 @@ class Qualification(db.Model):
         db.session.commit()
         return average
 
-    def addQualification(self):
-        query = update({'calificacion': Services.calificacion})
-        db.session.execute(query)
-        db.session.commit()
+    def addQualification(qualification,userId,serviceId):
+        hola = "hello"
 
         

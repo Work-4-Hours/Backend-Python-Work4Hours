@@ -13,10 +13,13 @@ def showServices():
     services = Services.getIndexPageServices()
     return jsonify(services)
 
-@services.route('/')
+
+@services.route('/avg', methods=["POST"])
 def getAverage():
-    average = Qualification.getQualificationsAverage()
+    getInfo = request.json
+    average = Qualification.getQualificationsAverage(getInfo["id"])
     return jsonify(average)
+
 
 @services.route('/serviceRegistry', methods=['POST'])
 def service_registry():

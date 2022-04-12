@@ -1,4 +1,3 @@
-from unittest import result
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, update
 from sqlalchemy.orm import relationship, backref
@@ -68,7 +67,7 @@ class Services(db.Model):
 
 
 
-    def searchAllServicesInfo(nombreServicio):
+    def searchAllServicesInfo(nombreServicio: str):
         services = []
         query = db.session.query(Services).filter(Services.nombre.like('%{}%'.format(nombreServicio)))
         result = db.session.execute(query)
