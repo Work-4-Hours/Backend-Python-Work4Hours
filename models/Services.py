@@ -43,7 +43,7 @@ class Services(db.Model):
 
     def getIndexPageServices():
         services = []
-        query = db.session.query(Services).filter(Services.calificacion >= 4).limit(20).all()
+        query = db.session.query(Services).filter(Services.calificacion >= 4).limit(20)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
             services.append(
