@@ -10,7 +10,7 @@ services = Blueprint('service_routes', __name__)
 @services.route('/')
 def showServices():
     services = Services.getIndexPageServices()
-    return jsonify({"services":services})
+    return jsonify(services)
 
 @services.route('/serviceRegistry', methods=['POST'])
 def service_registry():
