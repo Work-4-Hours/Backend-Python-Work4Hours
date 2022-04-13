@@ -13,7 +13,7 @@ def user_login():
 
     userInfo = Users.login(email,password)
 
-    return jsonify(userInfo)
+    return jsonify({"userInfo":userInfo})
     
 
 @user.route('/registry', methods=['POST'])
@@ -31,6 +31,6 @@ def user_registry():
 
     user = Users.validateRegistry(name,lastName,phoneNumber,address,email,password,birthDate,picture,city)
 
-    return jsonify(user)
+    return jsonify({"user":user})
 
     
