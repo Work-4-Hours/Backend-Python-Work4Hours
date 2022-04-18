@@ -122,7 +122,7 @@ class Users(db.Model):
         user, userId = Users.getExistantUser(email,password,1)
         if (user):
             token = str(write_token(userId)).split("'")[1]
-            return {"token":token, "info":user}
+            return {"token":token, "info":user, "exist": True}
         else:
             return {"exist":False}
 
