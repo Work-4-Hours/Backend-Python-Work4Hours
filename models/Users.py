@@ -94,11 +94,11 @@ class Users(db.Model):
                 "lastName" : userInfo.apellidos,
                 "email" : userInfo.correo,
                 "status" : userInfo.estado,
-                "rol" : userInfo.rol,
                 "userPicture" : userInfo.fotop,
             },
             userId = {
-                "id" : userInfo.idusuario
+                "id" : userInfo.idusuario,
+                "rol" : userInfo.rol
             }
         return user,userId
 
