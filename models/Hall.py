@@ -1,6 +1,7 @@
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
+from models.Services import Services
 
 
 class Hall(db.Model):
@@ -10,7 +11,8 @@ class Hall(db.Model):
     fechafin = db.Column(db.Date, nullable= False)
     horainicio = db.Column(db.String(5), nullable= False)
     horafin = db.Column(db.String(5), nullable=False)
-    idservicio = db.Column(db.Integer, ForeignKey('servicios.idservicios'))
+    idservicio = db.Column(db.Integer, ForeignKey('servicios.idservicios'), nullable=False)
+    servicios = relationship(Services, backref = backref('sala', uselist = True))
 
 
     def __init__(self,fechainicio,fechafin,horainicio,horafin):

@@ -24,6 +24,7 @@ class Users(db.Model):
     contrasenna = db.Column(db.String(150), nullable= False)
     fnac = db.Column(db.Date, nullable= False)
     fotop = db.Column(db.String(500), nullable= True)
+    color = db.Column(db.String(8), nullable= True)
     ciudad = db.Column(db.Integer, ForeignKey('ciudades.idciudad'),nullable = False)
     ciudades = relationship(City, backref=backref('usuarios', uselist=True))
     rol = db.Column(db.Integer, ForeignKey('roles.idrol'),nullable= False)
@@ -31,7 +32,9 @@ class Users(db.Model):
     estado = db.Column(db.Integer, ForeignKey('estados.id'),nullable = False)
     estados = relationship(Statuses, backref=backref('usuarios', uselist=True))
 
-    def __init__(self,nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad):
+
+
+    def __init__(self,nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad,color):
         self.nombres= nombres
         self.apellidos = apellidos
         self.celular = celular
@@ -43,6 +46,8 @@ class Users(db.Model):
         self.ciudad = ciudad
         self.rol = 1
         self.estado = 1
+        self.color = color
+
 
 
     #Function to decrypt passwords
@@ -52,10 +57,12 @@ class Users(db.Model):
         return bcrypt.checkpw(encodedPassword,encodedHash)
 
 
+
     #Funtion to encrypt passwords
     def encryptPassword(password):
         encoded = bytes(password.encode(encoding='UTF-8'))
         return bcrypt.hashpw(encoded,salt)
+
 
 
     #Function to get the password from de db and decrypt it if it exist
@@ -71,6 +78,7 @@ class Users(db.Model):
         return decryptedPassword 
 
 
+
     #function to validate existance of an user in db: 
     def getExistantUser(email,password, type):
         userId = {}
@@ -84,6 +92,8 @@ class Users(db.Model):
             user, userId = Users.getUserInfo(result.scalars())
         db.session.commit()
         return user, userId
+
+
 
     def getUserInfo(result):
         userId = {}
@@ -117,6 +127,7 @@ class Users(db.Model):
             return {"exist": "User already exist"}
 
 
+
     #Function to look for a user in DB and take his info:
     def login(email,password):
         user, userId = Users.getExistantUser(email,password,1)
@@ -125,6 +136,7 @@ class Users(db.Model):
             return {"token":token, "info":user, "exist": True}
         else:
             return {"exist":False}
+
 
 
     #Function to search all users in the app

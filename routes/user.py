@@ -28,6 +28,7 @@ def user_registry():
     birthDate = userInfo["birthDate"]
     picture = userInfo["picture"]
     city = userInfo["city"]
+    color = userInfo["color"]
 
     user = Users.validateRegistry(name,lastName,phoneNumber,address,email,password,birthDate,picture,city)
 
