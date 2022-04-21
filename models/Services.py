@@ -49,6 +49,8 @@ class Services(db.Model):
         query = db.session.query(Services).filter(Services.calificacion >= 4.0).limit(20)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
+            departmentId,cityId,cityName = Services.getCityInfo(serviceInfo.idservicio,serviceInfo.usuario)
+            departmentName = Services.getDepartmentInfo(departmentId)
             token = str(write_token({"userId" : serviceInfo.usuario})).split("'")[1]
             services.append(
                 {
@@ -56,6 +58,10 @@ class Services(db.Model):
                     "id" : serviceInfo.idservicio,
                     "price": serviceInfo.precio,
                     "photo": serviceInfo.foto,
+                    "city_code": cityId,
+                    "city_name": cityName,
+                    "department_code":departmentId,
+                    "department_name":departmentName,
                     "user": token
                 }
             )
@@ -101,10 +107,11 @@ class Services(db.Model):
         departmentId = ""
         cityId = ""
         cityName = ""
-        citySubquery = db.session.query(Users.ciudad).filter(Services.usuario == userId and Services.idservicio == serviceId).subquery()
-        cityInfoQuery = db.session.query(City.iddepartamento, City.idciudad, City.nombre).filter(City.idciudad == citySubquery)
+        citySubquery = db.session.query(Users.ciudad).filter(Services.usuario == userId).subquery()
+        cityInfoQuery = db.session.query(City.iddepartamento, City.idciudad, City.nombre).filter(City.idciudad.in_(citySubquery))
         cityInfo = db.session.execute(cityInfoQuery)
         for city in cityInfo.scalars():
+            print(city)
             departmentId = city.iddepartamento
             cityId = city.idciudad
             cityName = city.nombre
