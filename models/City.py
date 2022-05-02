@@ -30,9 +30,9 @@ class City(db.Model):
             cityName = city[2]
         return departmentId,cityId,cityName
 
-    def getAllcities():
+    def getAllcitiesFromDepartment(departmentId:Integer):
         cities = []
-        citiesQuery = db.session.query(City).all()
+        citiesQuery = db.session.query(City).filter(City.iddepartamento == departmentId).all()
         citiesResult = db.session.execute(citiesQuery)
         for city in citiesResult.scalars():
             cities.append(
