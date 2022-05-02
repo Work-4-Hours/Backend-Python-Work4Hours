@@ -1,11 +1,15 @@
+from lib2to3.pytree import convert
 from models.City import City
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, update
+from sqlalchemy.sql import text
 from sqlalchemy.orm import relationship, backref
 from models.Categories import Categories
 from models.Statuses import Statuses
 from models.Users import Users
 from models.Appeals import Appeals
+from models.Departament import Departament
+from models.City import City
 from models.Departament import Departament
 from jwt_Functions import write_token
 
@@ -49,8 +53,8 @@ class Services(db.Model):
         query = db.session.query(Services).filter(Services.calificacion >= 4.0).limit(20)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
-            departmentId,cityId,cityName = Services.getCityInfo(serviceInfo.idservicio,serviceInfo.usuario)
-            departmentName = Services.getDepartmentInfo(departmentId)
+            departmentId,cityId,cityName = City.getCityInfo(serviceInfo.idservicio,serviceInfo.usuario)
+            departmentName = Departament.getDepartmentInfo(departmentId)
             token = str(write_token({"userId" : serviceInfo.usuario})).split("'")[1]
             services.append(
                 {
@@ -82,8 +86,8 @@ class Services(db.Model):
         query = db.session.query(Services).filter(Services.nombre.like('%{}%'.format(nombreServicio)))
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
-            departmentId,cityId,cityName = Services.getCityInfo(serviceInfo.idservicio,serviceInfo.usuario)
-            departmentName = Services.getDepartmentInfo(departmentId)
+            departmentId,cityId,cityName = City.getCityInfo(serviceInfo.idservicio,serviceInfo.usuario)
+            departmentName = Departament.getDepartmentInfo(departmentId)
             token = str(write_token({"userId" : serviceInfo.usuario})).split("'")[1]
             services.append(
                 {
@@ -100,33 +104,6 @@ class Services(db.Model):
             )
         db.session.commit()
         return services
-
-
-
-    def getCityInfo(serviceId:Integer,userId:Integer):
-        departmentId = ""
-        cityId = ""
-        cityName = ""
-        citySubquery = db.session.query(Users.ciudad).filter(Services.usuario == userId).subquery()
-        cityInfoQuery = db.session.query(City.iddepartamento, City.idciudad, City.nombre).filter(City.idciudad.in_(citySubquery))
-        cityInfo = db.session.execute(cityInfoQuery)
-        for city in cityInfo.scalars():
-            print(city)
-            departmentId = city.iddepartamento
-            cityId = city.idciudad
-            cityName = city.nombre
-        return departmentId,cityId,cityName
-
-
-
-    def getDepartmentInfo(departmentId:Integer):
-        departmentName = ""
-        departmentQuery = db.session.query(Departament.nombre).filter(Departament.iddepartamento == departmentId)
-        departmentInfo = db.session.execute(departmentQuery)
-        for department in departmentInfo.scalars():
-            departmentName = department.nombre
-        return departmentName
-
 
 
     def addQualification(self):

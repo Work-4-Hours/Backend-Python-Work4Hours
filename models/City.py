@@ -1,5 +1,6 @@
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
+from sqlalchemy.sql import text
 from sqlalchemy.orm import relationship, backref
 from models.Departament import Departament
 
@@ -13,3 +14,18 @@ class City(db.Model):
     def __init__(self,nombre,iddepartamento):
         self.nombre=nombre
         self.iddepartamento=iddepartamento
+
+
+    def getCityInfo(serviceId:Integer,userId:Integer):
+        departmentId = ""
+        cityId = ""
+        cityName = ""
+        cityInfoQuery = text("""SELECT c.iddepartamento, c.idciudad, c.nombre FROM ciudades c WHERE c.idciudad = (SELECT u.ciudad FROM usuarios u where u.idusuario = :userId)""").bindparams(
+            userId = userId
+        )
+        cityInfo = db.session.execute(cityInfoQuery)
+        for city in cityInfo:
+            departmentId = city[0]
+            cityId = city[1]
+            cityName = city[2]
+        return departmentId,cityId,cityName

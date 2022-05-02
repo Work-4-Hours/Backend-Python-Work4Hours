@@ -9,3 +9,12 @@ class Departament(db.Model):
 
     def __init__(self,nombre):
         self.nombre= nombre
+
+    
+    def getDepartmentInfo(departmentId:Integer):
+        departmentName = ""
+        departmentQuery = db.session.query(Departament.nombre).filter(Departament.iddepartamento == departmentId)
+        departmentInfo = db.session.execute(departmentQuery)
+        for department in departmentInfo.scalars():
+            departmentName = department
+        return departmentName
