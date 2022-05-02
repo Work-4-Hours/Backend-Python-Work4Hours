@@ -18,3 +18,16 @@ class Departament(db.Model):
         for department in departmentInfo.scalars():
             departmentName = department
         return departmentName
+
+    def getAllDepartments():
+        departments = []
+        departmentsQuery = db.session.query(Departament).all()
+        departmentsInfo = db.session.execute(departmentsQuery)
+        for department in departmentsInfo.scalars():
+            departments.append(
+                {
+                    "departmentId":department.iddepartamento,
+                    "departmentName":department.nombre
+                }
+            )
+        return 

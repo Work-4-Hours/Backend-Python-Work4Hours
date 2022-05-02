@@ -29,3 +29,16 @@ class City(db.Model):
             cityId = city[1]
             cityName = city[2]
         return departmentId,cityId,cityName
+
+    def getAllcities():
+        cities = []
+        citiesQuery = db.session.query(City).all()
+        citiesResult = db.session.execute(citiesQuery)
+        for city in citiesResult.scalars():
+            cities.append(
+                {
+                    "cityName":city.nombre,
+                    "cityId":city.iddepartamento
+                }
+            )
+        return cities
