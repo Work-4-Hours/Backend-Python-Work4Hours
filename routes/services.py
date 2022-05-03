@@ -44,6 +44,7 @@ def search():
     serviceInfo = Services.searchAllServicesInfo(nombre)
 
     return jsonify(serviceInfo)
+    
 
 @services.route('/addQualification')
 def addQ():
