@@ -10,7 +10,7 @@ class City(db.Model):
     nombre = db.Column(db.String(50), nullable= False)
     iddepartamento = db.Column(db.Integer, ForeignKey('departamentos.iddepartamento'),nullable=False)
     departamentos = relationship(Departament, backref=backref('departamentos', uselist=True))
-    
+
 
     def __init__(self,nombre,iddepartamento):
         self.nombre=nombre
@@ -30,11 +30,11 @@ class City(db.Model):
             cityId = city[1]
             cityName = city[2]
         return departmentId,cityId,cityName
+        
 
-
-    def getAllcities():
+    def getAllcitiesFromDepartment(departmentId:Integer):
         cities = []
-        citiesQuery = db.session.query(City).all()
+        citiesQuery = db.session.query(City).filter(City.iddepartamento == departmentId).all()
         citiesResult = db.session.execute(citiesQuery)
         for city in citiesResult.scalars():
             cities.append(

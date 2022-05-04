@@ -1,5 +1,8 @@
+from crypt import methods
 from flask import Blueprint, json, jsonify, request
 from models.Users import Users
+from models.Departament import Departament
+from models.City import City
 from utils.db import db
 
 user = Blueprint('user_routes', __name__)
@@ -14,6 +17,18 @@ def user_login():
     userInfo = Users.login(email,password)
 
     return jsonify({"userInfo":userInfo})
+
+
+@user.before_request()
+def getDepartment():
+    departments = Departament.getAllDepartments()
+    return jsonify({"departments":departments})
+
+
+@user.route('/locationInfo/<int:departmentId>', methods=['GET'])
+def user_location(departmentId):
+    cities = City.getAllcitiesFromDepartment(departmentId)
+    return jsonify({"cities":cities})
     
 
 @user.route('/registry', methods=['POST'])
