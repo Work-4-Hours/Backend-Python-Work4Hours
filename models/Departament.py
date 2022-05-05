@@ -17,6 +17,7 @@ class Departament(db.Model):
         departmentInfo = db.session.execute(departmentQuery)
         for department in departmentInfo.scalars():
             departmentName = department
+        db.session.commit()
         return departmentName
 
     def getAllDepartments():
@@ -30,4 +31,5 @@ class Departament(db.Model):
                     "name":department.nombre
                 }
             )
+        db.session.commit()
         return departments

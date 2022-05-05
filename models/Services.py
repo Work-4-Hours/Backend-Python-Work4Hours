@@ -1,7 +1,5 @@
-from lib2to3.pytree import convert
-from models.City import City
 from utils.db import db
-from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, update
+from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, update, delete
 from sqlalchemy.sql import text
 from sqlalchemy.orm import relationship, backref
 from models.Categories import Categories
@@ -48,7 +46,7 @@ class Services(db.Model):
         
 
 
-    def getIndexPageServices():
+    def getIndexPageServices() -> list :
         services = []
         query = db.session.query(Services).filter(Services.calificacion >= 4.0).limit(20)
         result = db.session.execute(query)
@@ -80,8 +78,7 @@ class Services(db.Model):
         db.session.commit()
 
 
-
-    def searchAllServicesInfo(nombreServicio: str):
+    def searchAllServicesInfo(nombreServicio: str) -> list :
         services = []
         query = db.session.query(Services).filter(Services.nombre.like('%{}%'.format(nombreServicio)))
         result = db.session.execute(query)
@@ -106,10 +103,17 @@ class Services(db.Model):
         return services
 
 
-    def addQualification(self):
-        query = update({'calificacion': Services.calificacion})
-        db.session.execute(query)
+    def deleteService(ServiceId:int):
+        db.session.execute(delete(Services).filter(Services.idservicio == ServiceId))
         db.session.commit()
+        return True
+               
+        
+
+    # def addQualification(self):
+    #     query = update({'calificacion': Services.calificacion})
+    #     db.session.execute(query)
+    #     db.session.commit()
 
         
 
