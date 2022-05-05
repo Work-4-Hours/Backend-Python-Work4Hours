@@ -22,13 +22,13 @@ def user_login():
 @user.route('/departments', methods=['GET'])
 def getDepartment():
     departments = Departament.getAllDepartments()
-    return jsonify(departments)
+    return jsonify({departments})
 
 
 @user.route('/cities/<int:departmentId>', methods=['GET'])
 def user_location(departmentId=5):
     cities = City.getAllcitiesFromDepartment(departmentId)
-    return jsonify(cities)
+    return jsonify({cities})
     
 
 @user.route('/registry', methods=['POST'])
