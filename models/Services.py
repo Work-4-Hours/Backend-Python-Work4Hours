@@ -43,7 +43,6 @@ class Services(db.Model):
         self.descripcion=descripcion
         self.foto=foto
         self.usuario=usuario
-        
 
 
     def getIndexPageServices() -> list :
@@ -103,12 +102,18 @@ class Services(db.Model):
         return services
 
 
-    def deleteService(ServiceId:int):
-        db.session.execute(delete(Services).filter(Services.idservicio == ServiceId))
+    def deleteService(serviceId:int):
+        db.session.execute(delete(Services).filter(Services.idservicio == serviceId))
         db.session.commit()
         return True
                
         
+    def updateServiceInfo(serviceId:int) -> bool :
+        db.session.execute(
+            update(Services).filter(Services.idservicio == serviceId).values()
+        )
+        db.session.commit()
+        return 
 
     # def addQualification(self):
     #     query = update({'calificacion': Services.calificacion})

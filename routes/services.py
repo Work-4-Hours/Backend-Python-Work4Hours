@@ -42,7 +42,6 @@ def search():
     serviceInfo = request.json  
     nombre = serviceInfo["serviceName"]
     serviceInfo = Services.searchAllServicesInfo(nombre)
-
     return jsonify(serviceInfo)
     
 
@@ -51,5 +50,10 @@ def addQ():
     serviceInfo = request.json
     calificacion = serviceInfo["calificacion"]
     serviceInfo = Services.addQualification(calificacion)
-
     return jsonify(serviceInfo)
+
+
+@services.route('/deleteService/<int:serviceId>')
+def deleteService(serviceId = None):
+    isDeleted = Services.deleteService(serviceId)
+    return jsonify(isDeleted)
