@@ -1,4 +1,4 @@
-from crypt import methods
+
 from flask import Blueprint, json, jsonify, request
 from models.Users import Users
 from models.Departament import Departament

@@ -21,7 +21,7 @@ class Departament(db.Model):
 
     def getAllDepartments():
         departments = []
-        departmentsQuery = db.session.query(Departament).all()
+        departmentsQuery = db.session.query(Departament)
         departmentsInfo = db.session.execute(departmentsQuery)
         for department in departmentsInfo.scalars():
             departments.append(
