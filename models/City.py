@@ -39,8 +39,8 @@ class City(db.Model):
         for city in citiesResult.scalars():
             cities.append(
                 {
-                    "cityName":city.nombre,
-                    "cityId":city.iddepartamento
+                    "name":city.nombre,
+                    "id":city.iddepartamento
                 }
             )
         return cities

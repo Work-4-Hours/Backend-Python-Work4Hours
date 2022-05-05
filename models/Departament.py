@@ -26,8 +26,8 @@ class Departament(db.Model):
         for department in departmentsInfo.scalars():
             departments.append(
                 {
-                    "departmentId":department.iddepartamento,
-                    "departmentName":department.nombre
+                    "id":department.iddepartamento,
+                    "name":department.nombre
                 }
             )
         return departments
