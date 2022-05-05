@@ -19,14 +19,14 @@ def user_login():
     return jsonify({"userInfo":userInfo})
 
 
-@user.before_request()
+@user.route('departments', methods=['GET'])
 def getDepartment():
     departments = Departament.getAllDepartments()
     return jsonify({"departments":departments})
 
 
-@user.route('/locationInfo/<int:departmentId>', methods=['GET'])
-def user_location(departmentId):
+@user.route('/cities/<int:departmentId>', methods=['GET'])
+def user_location(departmentId=5):
     cities = City.getAllcitiesFromDepartment(departmentId)
     return jsonify({"cities":cities})
     
