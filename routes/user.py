@@ -19,7 +19,7 @@ def user_login():
     return jsonify({"userInfo":userInfo})
 
 
-@user.route('departments', methods=['GET'])
+@user.route('/departments', methods=['GET'])
 def getDepartment():
     departments = Departament.getAllDepartments()
     return jsonify({"departments":departments})

@@ -30,4 +30,4 @@ class Departament(db.Model):
                     "departmentName":department.nombre
                 }
             )
-        return 
+        return departments
