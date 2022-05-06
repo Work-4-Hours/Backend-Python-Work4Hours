@@ -13,23 +13,30 @@ class Qualification(db.Model):
     idservicio = db.Column(db.Integer, ForeignKey('servicios.idservicio'), nullable=False)
     servicio = relationship(Services, backref=backref('servicio', uselist=True))
 
+
     def __init__(self, calificacion, idusuario, idservicio):
         self.calificacion = calificacion
         self.idusuario = idusuario
         self.idservicio = idservicio
 
+
     def getQualificationsAverage(serviceId):
-        average = {}
+        averageQualification = {}
         query = db.session.query(func.avg(Qualification.calificacion)).filter(Qualification.idservicio == serviceId)
         result = db.session.execute(query)
         for average in result.scalars():
-            average = {
+            averageQualification = {
                 "average": average,
             }
         db.session.commit()
-        return average
+        return averageQualification
+
 
     def addQualification(qualification,userId,serviceId):
-        hola = "hello"
+        newQualification = Qualification(qualification,userId,serviceId)
+        db.session.add(newQualification)
+        db.session.commit()
+
+
 
         
