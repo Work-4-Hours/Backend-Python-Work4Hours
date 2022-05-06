@@ -44,7 +44,7 @@ def user_registry():
     picture = userInfo["picture"]
     city = userInfo["city"]
     color = userInfo["color"]
-    user = Users.validateRegistry(name,lastName,phoneNumber,address,email,password,birthDate,picture,city)
+    user = Users.validateRegistry(name,lastName,phoneNumber,address,email,password,birthDate,picture,city,color)
     return jsonify({"user":user})
 
     
