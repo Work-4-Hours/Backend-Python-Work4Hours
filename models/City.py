@@ -42,7 +42,7 @@ class City(db.Model):
             cities.append(
                 {
                     "name":city.nombre,
-                    "id":city.iddepartamento
+                    "id":city.idciudad
                 }
             )
         db.session.commit()

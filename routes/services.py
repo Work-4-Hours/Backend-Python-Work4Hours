@@ -66,3 +66,7 @@ def updateService():
     serviceId = serviceNewInfo["id"]
     serviceName = serviceNewInfo["name"]
     serviceType = serviceNewInfo["type"]
+    servicePhoto = serviceNewInfo["photo"]
+    ser
+    Services.updateServiceInfo()
+
