@@ -17,17 +17,19 @@ class Departament(db.Model):
         departmentInfo = db.session.execute(departmentQuery)
         for department in departmentInfo.scalars():
             departmentName = department
+        db.session.commit()
         return departmentName
 
     def getAllDepartments():
         departments = []
-        departmentsQuery = db.session.query(Departament).all()
+        departmentsQuery = db.session.query(Departament)
         departmentsInfo = db.session.execute(departmentsQuery)
         for department in departmentsInfo.scalars():
             departments.append(
                 {
-                    "departmentId":department.iddepartamento,
-                    "departmentName":department.nombre
+                    "id":department.iddepartamento,
+                    "name":department.nombre
                 }
             )
-        return 
+        db.session.commit()
+        return departments

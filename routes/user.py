@@ -1,5 +1,7 @@
-from crypt import methods
+
+from types import NoneType
 from flask import Blueprint, json, jsonify, request
+from models.Services import Services
 from models.Users import Users
 from models.Departament import Departament
 from models.City import City
@@ -19,7 +21,7 @@ def user_login():
     return jsonify({"userInfo":userInfo})
 
 
-@user.route('departments', methods=['GET'])
+@user.route('/departments', methods=['GET'])
 def getDepartment():
     departments = Departament.getAllDepartments()
     return jsonify({"departments":departments})
@@ -30,6 +32,14 @@ def user_location(departmentId=5):
     cities = City.getAllcitiesFromDepartment(departmentId)
     return jsonify({"cities":cities})
     
+
+
+
+        
+        
+        
+        
+
 
 @user.route('/registry', methods=['POST'])
 def user_registry():
