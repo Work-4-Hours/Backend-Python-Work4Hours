@@ -1,3 +1,4 @@
+from crypt import methods
 from distutils.log import info
 from re import search
 from flask import Blueprint, json, jsonify, request, session, render_template
@@ -57,3 +58,11 @@ def addQ():
 def deleteService(serviceId = None):
     isDeleted = Services.deleteService(serviceId)
     return jsonify(isDeleted)
+
+
+@services.route('/updateService', methods=['POST'])
+def updateService():
+    serviceNewInfo = request.json
+    serviceId = serviceNewInfo["id"]
+    serviceName = serviceNewInfo["name"]
+    serviceType = serviceNewInfo["type"]

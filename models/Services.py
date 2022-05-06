@@ -87,21 +87,8 @@ class Services(db.Model):
         query = db.session.query(Services).filter(Services.nombre.like('%{}%'.format(nombreServicio)))
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
-            departmentId,cityId,cityName = City.getCityInfo(serviceInfo.idservicio,serviceInfo.usuario)
-            departmentName = Departament.getDepartmentInfo(departmentId)
-            token = str(write_token({"userId" : serviceInfo.usuario})).split("'")[1]
             services.append(
-                {
-                    "name": serviceInfo.nombre,
-                    "id" : serviceInfo.idservicio,
-                    "price": serviceInfo.precio,
-                    "photo": serviceInfo.foto,
-                    "city_code": cityId,
-                    "city_name": cityName,
-                    "department_code":departmentId,
-                    "department_name":departmentName,
-                    "user": token
-                }
+                Services.extractServiceInfo(serviceInfo)
             )
         db.session.commit()
         return services
@@ -113,16 +100,22 @@ class Services(db.Model):
         return True
                
         
-    def updateServiceInfo(serviceId:int) -> bool :
+    def updateServiceInfo(serviceId:int , categoryId:int , name:str , photo:str, type:str , price:int , description:str) -> bool :
         db.session.execute(
-            update(Services).filter(Services.idservicio == serviceId).values()
+            update(Services).filter(Services.idservicio == serviceId).values(
+                {Services.idcategoria : categoryId},
+                {Services.nombre : name},
+                {Services.foto : photo},
+                {Services.tipo : type},
+                {Services.precio : price},
+                {Services.descripcion : description}
+                )
         )
         db.session.commit()
-        return 
+        return True
 
         
 
 
     
-        
         

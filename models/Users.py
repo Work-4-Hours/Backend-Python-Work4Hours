@@ -19,7 +19,7 @@ class Users(db.Model):
     nombres = db.Column(db.String(60), nullable= False)
     apellidos = db.Column(db.String(60), nullable= False)
     celular = db.Column(db.String(30), nullable= False)
-    direccion = db.Column(db.String(500), nullable= False)
+    direccion = db.Column(db.String(500), nullable= True)
     correo = db.Column(db.String(500), nullable = False)
     contrasenna = db.Column(db.String(150), nullable= False)
     fnac = db.Column(db.Date, nullable= False)
