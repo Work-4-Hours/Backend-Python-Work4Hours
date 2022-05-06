@@ -115,11 +115,11 @@ class Users(db.Model):
 
 
     #Function to decide if the user must be registered
-    def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad):
+    def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad,color):
         user, userId = Users.getExistantUser(correo,contrasenna,0)
         if(bool(user) == False):
             encryptedPassword = Users.encryptPassword(contrasenna)
-            newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad)
+            newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad,color)
             db.session.add(newUser)
             db.session.commit()
             return {"exist": "new User created"}
