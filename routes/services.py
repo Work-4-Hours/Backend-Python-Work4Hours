@@ -67,6 +67,6 @@ def updateService():
     serviceName = serviceNewInfo["name"]
     serviceType = serviceNewInfo["type"]
     servicePhoto = serviceNewInfo["photo"]
-    ser
+    servicePrice = serviceNewInfo["price"]
     Services.updateServiceInfo()
 

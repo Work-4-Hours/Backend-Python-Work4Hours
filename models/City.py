@@ -32,7 +32,6 @@ class City(db.Model):
         db.session.commit()
         return departmentId,cityId,cityName
 
-        
 
     def getAllcitiesFromDepartment(departmentId:Integer):
         cities = []
