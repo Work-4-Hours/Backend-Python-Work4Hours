@@ -1,5 +1,4 @@
 
-from crypt import methods
 from distutils.log import info
 from re import search
 from flask import Blueprint, json, jsonify, request, session, render_template
@@ -74,7 +73,7 @@ def updateService():
     res = Services.updateServiceInfo(sId,sCategory,sName,sPhoto,sType,sPrice,sDescription)
     return jsonify(res)
 
-@services.route('serviceInfo/<int:idservicio>/<int:usuario>',methods=["POST"])
+@services.route('/serviceInfo/<int:idservicio>/<int:usuario>',methods=["POST"])
 def getServiceInfo(idservicio,usuario):
     queryInfo = {idservicio,usuario}
     serviceInfo = Services.extractServiceInfo(queryInfo)
