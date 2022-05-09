@@ -100,15 +100,16 @@ class Services(db.Model):
         return True
                
         
-    def updateServiceInfo(serviceId:int , categoryId:int , name:str , photo:str, type:str , price:int , description:str) -> bool :
+    def updateServiceInfo(serviceId:int , categoryId:str , name:str , photo:str, type:str , price:int , description:str):
         db.session.execute(
-            update(Services).filter(Services.idservicio == serviceId).values(
-                {Services.idcategoria : categoryId},
-                {Services.nombre : name},
-                {Services.foto : photo},
-                {Services.tipo : type},
-                {Services.precio : price},
-                {Services.descripcion : description}
+            text("UPDATE servicios SET idcategoria = :categoryId, nombre = :name, foto = :photo, tipo= :type, precio = :price, descripcion= :description WHERE idservicio = :serviceId").bindparams(
+                    categoryId = categoryId,
+                    serviceId = serviceId,
+                    name = name,
+                    photo = photo,
+                    type = type,
+                    price = price,
+                    description = description
                 )
         )
         db.session.commit()
