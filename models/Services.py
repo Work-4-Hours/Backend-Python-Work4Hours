@@ -56,8 +56,17 @@ class Services(db.Model):
         db.session.commit()
         return services
 
+    
+    def getServiceInfo(serviceId):
+        service = ""
+        query = db.session.execute(db.session.query(Services).filter(Services.idservicio == serviceId))
+        for serviceInfo in query.scalars():
+            service = Services.extractServiceInfo(serviceInfo)
+        return service
+
 
     def extractServiceInfo(serviceInfo):
+        print(serviceInfo,"-------------------------------------------------------")
         service = {}
         departmentId,cityId,cityName = City.getCityInfo(serviceInfo.idservicio,serviceInfo.usuario)
         departmentName = Departament.getDepartmentInfo(departmentId)

@@ -73,8 +73,7 @@ def updateService():
     res = Services.updateServiceInfo(sId,sCategory,sName,sPhoto,sType,sPrice,sDescription)
     return jsonify(res)
 
-@services.route('/serviceInfo/<int:idservicio>/<int:usuario>',methods=["POST"])
-def getServiceInfo(idservicio,usuario):
-    queryInfo = {idservicio,usuario}
-    serviceInfo = Services.extractServiceInfo(queryInfo)
+@services.route('/serviceInfo/<int:serviceId>',methods=["POST"])
+def getServiceInfo(serviceId):
+    serviceInfo = Services.getServiceInfo(serviceId)
     return serviceInfo
