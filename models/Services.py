@@ -1,3 +1,4 @@
+from unittest import result
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, update, delete
 from sqlalchemy.sql import text
@@ -55,6 +56,14 @@ class Services(db.Model):
             )
         db.session.commit()
         return services
+
+    def getServiceInfo(serviceId:int):
+        service = ""
+        query = db.session.query(Services).filter(Services.idservicio == serviceId)
+        result = db.session.execute(query)
+        for serviceInfo in result.scalars():
+            service = Services.extractServiceInfo(serviceInfo)
+        return service
 
 
     def extractServiceInfo(serviceInfo):

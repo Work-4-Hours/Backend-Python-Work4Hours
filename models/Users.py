@@ -33,6 +33,7 @@ class Users(db.Model):
     estados = relationship(Statuses, backref=backref('usuarios', uselist=True))
 
 
+
     def __init__(self,nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad,color):
         self.nombres= nombres
         self.apellidos = apellidos
@@ -48,17 +49,20 @@ class Users(db.Model):
         self.color = color
 
 
+
     #Function to decrypt passwords
-    def decryptPassword(password : str, dbHashedPWD: str):
+    def decryptPassword(password : str, dbHashedPWD: str) -> bool:
         encodedPassword = password.encode(encoding='UTF-8')
         encodedHash = dbHashedPWD.encode(encoding='UTF-8')
         return bcrypt.checkpw(encodedPassword,encodedHash)
+
 
 
     #Funtion to encrypt passwords
     def encryptPassword(password):
         encoded = bytes(password.encode(encoding='UTF-8'))
         return bcrypt.hashpw(encoded,salt)
+
 
 
     #Function to get the password from de db and decrypt it if it exist
@@ -74,6 +78,7 @@ class Users(db.Model):
         return decryptedPassword 
 
 
+
     #function to validate existance of an user in db: 
     def getExistantUser(email,password, type):
         userId = {}
@@ -87,6 +92,7 @@ class Users(db.Model):
             user, userId = Users.getUserInfo(result.scalars())
         db.session.commit()
         return user, userId
+
 
 
     def getUserInfo(result):
@@ -108,17 +114,19 @@ class Users(db.Model):
         return user,userId
 
 
+
     #Function to decide if the user must be registered
-    def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad,color):
+    def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad):
         user, userId = Users.getExistantUser(correo,contrasenna,0)
         if(bool(user) == False):
             encryptedPassword = Users.encryptPassword(contrasenna)
-            newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad,color)
+            newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad)
             db.session.add(newUser)
             db.session.commit()
             return {"exist": "new User created"}
         else:
             return {"exist": "User already exist"}
+
 
 
     #Function to look for a user in DB and take his info:
@@ -129,6 +137,7 @@ class Users(db.Model):
             return {"token":token, "info":user, "exist": True}
         else:
             return {"exist":False}
+
 
 
     #Function to search all users in the app
