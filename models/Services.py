@@ -61,12 +61,13 @@ class Services(db.Model):
         service = ""
         query = db.session.execute(db.session.query(Services).filter(Services.idservicio == serviceId))
         for serviceInfo in query.scalars():
+            
             service = Services.extractServiceInfo(serviceInfo)
+        db.session.commit()
         return service
 
 
     def extractServiceInfo(serviceInfo):
-        print(serviceInfo,"-------------------------------------------------------")
         service = {}
         departmentId,cityId,cityName = City.getCityInfo(serviceInfo.idservicio,serviceInfo.usuario)
         departmentName = Departament.getDepartmentInfo(departmentId)
@@ -80,7 +81,8 @@ class Services(db.Model):
             "city_name": cityName,
             "department_code":departmentId,
             "department_name":departmentName,
-            "user": token
+            "user": token,
+            "description":serviceInfo.descripcion
         }
         return service
 

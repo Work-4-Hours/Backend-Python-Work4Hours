@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship, backref
 from models.City import City
 from models.Rol import Rol
 from models.Statuses import Statuses
-from jwt_Functions import write_token
+from jwt_Functions import write_token, validate_token
 import os
 from config import salt
 import bcrypt
@@ -132,20 +132,17 @@ class Users(db.Model):
 
 
     #Function to search all users in the app
-    def searchAllUsersInfo():
+    def searchUserInfo(encryptedId):
         users = []
-        query = select(Users)
+        userId = validate_token(encryptedId,True)
+        query = select(Users).filter(Users.idusuario == userId.id)
         result = db.session.execute(query)
         for usersInfo in result.scalars():
-            users.append(
-                {
-                    "name" : usersInfo.nombres,
-                    "lastName" : usersInfo.apellidos,
-                    "email" : usersInfo.correo,
-                    "contrasenna" : usersInfo.contrasenna
-                }
-            )
-
+            {
+                "name" : usersInfo.nombres,
+                "lastName" : usersInfo.apellidos,
+                "photo": usersInfo.fotop,
+                "color": usersInfo.color,
+            }
         db.session.commit()
-
         return users
