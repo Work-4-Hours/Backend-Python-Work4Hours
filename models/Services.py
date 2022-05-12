@@ -9,7 +9,6 @@ from models.Appeals import Appeals
 from models.Departament import Departament
 from models.City import City
 from models.Departament import Departament
-from models.Qualification import Qualification
 from jwt_Functions import write_token
 
 
