@@ -133,16 +133,15 @@ class Users(db.Model):
 
     #Function to search all users in the app
     def searchUserInfo(encryptedId):
-        users = []
+        user = {}
         userId = validate_token(encryptedId,True)
-        query = select(Users).filter(Users.idusuario == userId.id)
-        result = db.session.execute(query)
+        result = db.session.execute(select(Users).filter(Users.idusuario == userId.get('userId')))
         for usersInfo in result.scalars():
-            {
+            user = {
                 "name" : usersInfo.nombres,
                 "lastName" : usersInfo.apellidos,
                 "photo": usersInfo.fotop,
                 "color": usersInfo.color,
             }
         db.session.commit()
-        return users
+        return user

@@ -47,4 +47,11 @@ def user_registry():
     user = Users.validateRegistry(name,lastName,phoneNumber,address,email,password,birthDate,picture,city,color)
     return jsonify({"user":user})
 
+
+@user.route('/getUser/<int:userId>', methods=["POST"])
+def getUser(userId):
+    user = Users.searchUserInfo(userId)
+    return jsonify({"serviceUser":user})
     
+
+ 

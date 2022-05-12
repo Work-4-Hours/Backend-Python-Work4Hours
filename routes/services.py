@@ -76,4 +76,4 @@ def updateService():
 @services.route('/serviceInfo/<int:serviceId>',methods=["POST"])
 def getServiceInfo(serviceId):
     serviceInfo = Services.getServiceInfo(serviceId)
-    return serviceInfo
+    return jsonify(serviceInfo)
