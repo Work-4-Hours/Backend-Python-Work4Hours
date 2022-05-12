@@ -9,6 +9,7 @@ from models.Appeals import Appeals
 from models.Departament import Departament
 from models.City import City
 from models.Departament import Departament
+from models.Qualification import Qualification
 from jwt_Functions import write_token
 
 
@@ -63,6 +64,7 @@ class Services(db.Model):
         for serviceInfo in query.scalars():
             service = Services.extractServiceInfo(serviceInfo)
         user = Users.searchUserInfo(service.get('user'))
+
         db.session.commit()
         return {"serviceInfo":service,"serviceUser":user}
 

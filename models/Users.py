@@ -141,7 +141,9 @@ class Users(db.Model):
                 "name" : usersInfo.nombres,
                 "lastName" : usersInfo.apellidos,
                 "photo": usersInfo.fotop,
-                "color": usersInfo.color,
+                "phoneNumber": usersInfo.celular,
+                "email": usersInfo.correo,
+                "color": usersInfo.color
             }
         db.session.commit()
         return user
