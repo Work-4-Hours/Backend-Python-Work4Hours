@@ -4,6 +4,8 @@ from models.Users import Users
 from models.Departament import Departament
 from models.City import City
 from utils.db import db
+from jwt_Functions import validate_token
+
 
 user = Blueprint('user_routes', __name__)
 
@@ -52,6 +54,18 @@ def user_registry():
 def getUser(userId):
     user = Users.searchUserInfo(userId)
     return jsonify({"serviceUser":user})
+
+
+@user.route('/allowChanges/<email>/<password>', methods=["POST"])
+def allowChanges(email,password):
+    token = request.headers["authorization"]
+    if validate_token(token,True):
+        res = bool(Users.getExistantUser(email,password,1))
+    else:
+        raise Exception("401 invalid token")
+    
+    return jsonify(res)
+
     
 
  
