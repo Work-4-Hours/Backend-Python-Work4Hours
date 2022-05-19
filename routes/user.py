@@ -1,3 +1,4 @@
+from email import message
 from flask import Blueprint, json, jsonify, request
 from sqlalchemy import true
 from models.Services import Services
@@ -61,8 +62,32 @@ def getUser(userId):
 @user.route('/allowChanges/<email>/<password>', methods=["POST"])
 def allowChanges(email,password):
     token = request.headers["authorization"]
-    if validate_token(token,True) == object:
-        res = bool(Users.getExistantUser(email,password,1))
+    userRes = ""
+    try:
+        if not(validate_token(token,True).get('status_code')):
+            userRes = bool(Users.getExistantUser(email,password,1))
+    except:
+        raise Exception(
+            status_code = 401,
+            detail = {
+                "status":"failed",
+                "response" : {
+                    "message":"invalid token"
+                    }
+                }
+        )
+    else:
+        return jsonify(
+            status_code = 200,
+            detail = {
+                "status":"success",
+                "response" : {
+                        userRes
+                    }
+                }
+
+        )
+
     return jsonify(res)
 
 

@@ -99,6 +99,8 @@ class Users(db.Model):
                 "email" : userInfo.correo,
                 "status" : userInfo.estado,
                 "userPicture" : userInfo.fotop,
+                "phoneNumber": userInfo.celular,
+                "birthDate": userInfo.fnac,
                 "color": userInfo.color
             },
             userId = {
