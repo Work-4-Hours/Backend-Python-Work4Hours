@@ -13,3 +13,7 @@ class Appeals(db.Model):
     def __init__(self,description,serviceid):
         self.descripcion = description
         self.idservicio = serviceid
+
+
+    # def createAppeal(email:str, description:str, serviceId:int) --> bool :
+        

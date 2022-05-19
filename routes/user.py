@@ -1,8 +1,10 @@
 from flask import Blueprint, json, jsonify, request
+from sqlalchemy import true
 from models.Services import Services
 from models.Users import Users
 from models.Departament import Departament
 from models.City import City
+from models.Appeals import Appeals
 from utils.db import db
 from jwt_Functions import validate_token
 
@@ -59,13 +61,24 @@ def getUser(userId):
 @user.route('/allowChanges/<email>/<password>', methods=["POST"])
 def allowChanges(email,password):
     token = request.headers["authorization"]
-    if validate_token(token,True):
+    if validate_token(token,True) == object:
         res = bool(Users.getExistantUser(email,password,1))
-    else:
-        raise Exception("401 invalid token")
-    
     return jsonify(res)
 
+
+@user.route('/appeal')
+def appealService():
+    token = request.headers["authorization"]
+    userInfo = request.json 
+    email = userInfo["email"]
+    serviceId = userInfo["serviceId"]
+    description = userInfo["description"]
+    Appeals(description,serviceId)
+    return true
+    
+
+
+    
     
 
  
