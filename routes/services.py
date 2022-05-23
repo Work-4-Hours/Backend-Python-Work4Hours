@@ -82,7 +82,7 @@ def getServiceInfo(serviceId):
 
 @services.route('/getUserService/<int:userId>', methods=["POST"])
 def getUserServices(userId):
-    token = request.headers["authorization"]
+    token = request.headers["authorization"].split(' ')[1]
     services = []
     try:
         if (validate_token(token,True).id):

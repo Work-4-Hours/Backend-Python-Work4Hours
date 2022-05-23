@@ -66,7 +66,7 @@ def getUserServices(userId):
 
 @user.route('/allowChanges/<email>/<password>', methods=["POST"])
 def allowChanges(email,password):
-    token = request.headers["authorization"]
+    token = request.headers["authorization"].split(' ')[1]
     userRes = ""
     try:
         if (validate_token(token,True).id):
