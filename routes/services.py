@@ -5,6 +5,7 @@ from flask import Blueprint, json, jsonify, request, session, render_template
 from models.Services import Services
 from models.Qualification import Qualification
 from utils.db import db
+from jwt_Functions import validate_token
 
 
 services = Blueprint('service_routes', __name__)
@@ -77,3 +78,16 @@ def updateService():
 def getServiceInfo(serviceId):
     serviceInfo = Services.getServiceInfo(serviceId)
     return jsonify(serviceInfo)
+
+
+@services.route('/getUserService/<int:userId>', methods=["POST"])
+def getUserServices(userId):
+    token = request.headers["authorization"]
+    services = []
+    try:
+        if (validate_token(token,True).id):
+            services = Services.getServicesFromUser(userId)
+    except:
+        raise Exception("Invalid Token")
+    else:
+        return services

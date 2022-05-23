@@ -128,6 +128,15 @@ class Services(db.Model):
         return True
 
         
+    def getServicesFromUser(userId):
+        services = []
+        result = db.session.execute(db.session.query(Services).filter(Services.usuario == userId))
+        for serviceInfo in result.scalars():
+            services.append(
+                Services.extractServiceInfo(serviceInfo)
+            )
+        db.session.commit()
+        return services
 
 
     
