@@ -85,7 +85,7 @@ def getUserServices(userId):
     token = request.headers["authorization"].split(' ')[1]
     services = []
     try:
-        if (validate_token(token,True).id):
+        if (validate_token(token,True)['id']):
             services = Services.getServicesFromUser(userId)
     except:
         raise Exception("Invalid Token")

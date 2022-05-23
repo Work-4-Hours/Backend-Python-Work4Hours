@@ -59,17 +59,12 @@ def getUser(userId):
     return jsonify({"serviceUser":user})
 
 
-@user.route('/getUserService/<int:userId>', methods=["POST"])
-def getUserServices(userId):
-    return "hola"
-
-
 @user.route('/allowChanges/<email>/<password>', methods=["POST"])
 def allowChanges(email,password):
     token = request.headers["authorization"].split(' ')[1]
     userRes = ""
     try:
-        if (validate_token(token,True).id):
+        if (validate_token(token,True)['id']):
             userRes = bool(Users.getExistantUser(email,password,1))
     except:
         raise Exception("Invalid Token")

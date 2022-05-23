@@ -129,14 +129,18 @@ class Services(db.Model):
 
         
     def getServicesFromUser(userId):
-        services = []
-        result = db.session.execute(db.session.query(Services).filter(Services.usuario == userId))
-        for serviceInfo in result.scalars():
-            services.append(
-                Services.extractServiceInfo(serviceInfo)
-            )
-        db.session.commit()
-        return services
+        try:
+            services = []
+            result = db.session.execute(db.session.query(Services).filter(Services.usuario == userId))
+            for serviceInfo in result.scalars():
+                services.append(
+                    Services.extractServiceInfo(serviceInfo)
+                )
+            db.session.commit()
+        except:
+            raise Exception("Invalid Id")
+        else:
+            return services
 
 
     
