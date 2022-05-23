@@ -53,23 +53,28 @@ def user_registry():
     return jsonify({"user":user})
 
 
-@user.route('/getUser/<userId>', methods=["POST"])
-def getUser(userId):
-    user = Users.searchUserInfo(userId)
+@user.route('/getUser', methods=["POST"])
+def getUser():
+    token = request.headers["authorization"].split(' ')[1]
+    user = Users.searchUserInfo(token)
     return jsonify({"serviceUser":user})
 
 
 @user.route('/allowChanges/<email>/<password>', methods=["POST"])
 def allowChanges(email,password):
     token = request.headers["authorization"].split(' ')[1]
-    userRes = ""
+    response = ""
     try:
         if (validate_token(token,True)['id']):
-            userRes = bool(Users.getExistantUser(email,password,1))
+            userRes = Users.getExistantUser(email,password,1)
+            if(userRes.userId.id):
+                response = True
+            else:
+                response = False 
     except:
         raise Exception("Invalid Token")
     else:
-        return jsonify(userRes)
+        return jsonify(response)
 
 
 @user.route('/appeal')

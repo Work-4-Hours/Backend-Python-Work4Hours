@@ -128,8 +128,9 @@ class Services(db.Model):
         return True
 
         
-    def getServicesFromUser(userId):
+    def getServicesFromUser(userId:int, token:str):
         try:
+            userInfo = Users.searchUserInfo(token)
             services = []
             result = db.session.execute(db.session.query(Services).filter(Services.usuario == userId))
             for serviceInfo in result.scalars():
@@ -140,7 +141,7 @@ class Services(db.Model):
         except:
             raise Exception("Invalid Id")
         else:
-            return services
+            return services,userInfo
 
 
     
