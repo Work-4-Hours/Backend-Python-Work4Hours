@@ -137,15 +137,19 @@ class Users(db.Model):
     def searchUserInfo(encryptedId):
         user = {}
         userId = validate_token(encryptedId,True)
-        result = db.session.execute(select(Users).filter(Users.idusuario == userId.get('userId')))
-        for usersInfo in result.scalars():
-            user = {
-                "name" : usersInfo.nombres,
-                "lastName" : usersInfo.apellidos,
-                "photo": usersInfo.fotop,
-                "phoneNumber": usersInfo.celular,
-                "email": usersInfo.correo,
-                "color": usersInfo.color
-            }
-        db.session.commit()
-        return user
+        try:
+            result = db.session.execute(select(Users).filter(Users.idusuario == userId.get('id')))
+            for usersInfo in result.scalars():
+                user = {
+                    "name" : usersInfo.nombres,
+                    "lastName" : usersInfo.apellidos,
+                    "photo": usersInfo.fotop,
+                    "phoneNumber": usersInfo.celular,
+                    "email": usersInfo.correo,
+                    "color": usersInfo.color
+                }
+            db.session.commit()
+        except:
+            raise Exception(userId.status_code)
+        else:
+            return user
