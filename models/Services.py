@@ -47,7 +47,7 @@ class Services(db.Model):
 
     def getIndexPageServices() -> list :
         services = []
-        query = db.session.query(Services).filter(Services.calificacion >= 4.0).limit(20)
+        query = db.session.query(Services).filter(Services.calificacion >= 4.0).filter(Services.estado == 1).limit(20)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
             services.append(
@@ -95,7 +95,7 @@ class Services(db.Model):
 
     def searchAllServicesInfo(nombreServicio: str) -> list :
         services = []
-        query = db.session.query(Services).filter(Services.nombre.like('%{}%'.format(nombreServicio)))
+        query = db.session.query(Services).filter(Services.nombre.like('%{}%'.format(nombreServicio))).filter(Services.estado == 1)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
             services.append(
@@ -111,16 +111,17 @@ class Services(db.Model):
         return True
                
         
-    def updateServiceInfo(serviceId:int , categoryId:str , name:str , photo:str, type:str , price:int , description:str):
+    def updateServiceInfo(serviceId:int , categoryId:str , name:str , photo:str, type:str , price:int , description:str, status:int):
         db.session.execute(
-            text("UPDATE servicios SET idcategoria = :categoryId, nombre = :name, foto = :photo, tipo= :type, precio = :price, descripcion= :description WHERE idservicio = :serviceId").bindparams(
+            text("UPDATE servicios SET idcategoria = :categoryId, nombre = :name, foto = :photo, tipo= :type, precio = :price, descripcion= :description, estado = :status WHERE idservicio = :serviceId").bindparams(
                     categoryId = categoryId,
                     serviceId = serviceId,
                     name = name,
                     photo = photo,
                     type = type,
                     price = price,
-                    description = description
+                    description = description,
+                    status = status,
                 )
         )
         db.session.commit()
