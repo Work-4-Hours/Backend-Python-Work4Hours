@@ -71,7 +71,8 @@ def updateService():
     sPrice = serviceNewInfo["price"]
     sCategory = serviceNewInfo["category"]
     sDescription = serviceNewInfo["description"]
-    res = Services.updateServiceInfo(sId,sCategory,sName,sPhoto,sType,sPrice,sDescription)
+    sStatus = serviceNewInfo["status"]
+    res = Services.updateServiceInfo(sId,sCategory,sName,sPhoto,sType,sPrice,sDescription,sStatus)
     return jsonify(res)
 
 @services.route('/serviceInfo/<int:serviceId>',methods=["POST"])
