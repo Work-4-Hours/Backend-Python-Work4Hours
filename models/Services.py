@@ -62,8 +62,7 @@ class Services(db.Model):
         query = db.session.execute(db.session.query(Services).filter(Services.idservicio == serviceId))
         for serviceInfo in query.scalars():
             service = Services.extractServiceInfo(serviceInfo)
-        user = Users.searchUserInfo(service['user'])
-        print(service['user'])
+        user = Users.searchUserInfoFromToken(service['user'])
         db.session.commit()
         return {"serviceInfo":service,"serviceUser":user}
 
@@ -130,7 +129,7 @@ class Services(db.Model):
         
     def getServicesFromUser(userId:int, token:str):
         try:
-            userInfo = Users.searchUserInfo(token)
+            userInfo = Users.searchUserInfoFromToken(token)
             services = []
             result = db.session.execute(db.session.query(Services).filter(Services.usuario == userId))
             for serviceInfo in result.scalars():

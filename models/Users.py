@@ -134,7 +134,7 @@ class Users(db.Model):
 
 
     #Function to search all users in the app
-    def searchUserInfo(encryptedId):
+    def searchUserInfoFromToken(encryptedId):
         user = {}
         userId = validate_token(encryptedId,True)
         try:

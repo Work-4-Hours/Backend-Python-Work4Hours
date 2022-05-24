@@ -56,7 +56,7 @@ def user_registry():
 @user.route('/getUser', methods=["POST"])
 def getUser():
     token = request.headers["authorization"].split(' ')[1]
-    user = Users.searchUserInfo(token)
+    user = Users.searchUserInfoFromToken(token)
     return jsonify({"serviceUser":user})
 
 
@@ -67,7 +67,7 @@ def allowChanges(email,password):
     try:
         if (validate_token(token,True)['id']):
             userRes = Users.getExistantUser(email,password,1)
-            if(userRes.userId.id):
+            if(userRes[1].get('id')):
                 response = True
             else:
                 response = False 
