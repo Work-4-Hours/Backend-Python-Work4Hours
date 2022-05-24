@@ -138,7 +138,7 @@ class Users(db.Model):
         user = {}
         userId = validate_token(encryptedId,True)
         try:
-            result = db.session.execute(select(Users).filter(Users.idusuario == userId.get('id')))
+            result = db.session.execute(select(Users).filter(Users.idusuario == userId.get('userId')))
             for usersInfo in result.scalars():
                 user = {
                     "name" : usersInfo.nombres,

@@ -62,8 +62,8 @@ class Services(db.Model):
         query = db.session.execute(db.session.query(Services).filter(Services.idservicio == serviceId))
         for serviceInfo in query.scalars():
             service = Services.extractServiceInfo(serviceInfo)
-        user = Users.searchUserInfo(service.get('user'))
-
+        user = Users.searchUserInfo(service['user'])
+        print(service['user'])
         db.session.commit()
         return {"serviceInfo":service,"serviceUser":user}
 
