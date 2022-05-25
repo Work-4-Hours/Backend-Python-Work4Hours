@@ -65,9 +65,9 @@ def allowChanges(email,password):
     token = request.headers["authorization"].split(' ')[1]
     response = ""
     try:
-        if (validate_token(token,True)['id']):
+        if (validate_token(token,True)['userId']):
             userRes = Users.getExistantUser(email,password,1)
-            if(userRes[1].get('id')):
+            if(userRes[1].get('userId')):
                 response = True
             else:
                 response = False 

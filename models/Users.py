@@ -104,7 +104,7 @@ class Users(db.Model):
                 "color": userInfo.color
             },
             userId = {
-                "id" : userInfo.idusuario,
+                "userId" : userInfo.idusuario,
                 "rol" : userInfo.rol
             }
         return user,userId

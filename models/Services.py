@@ -82,7 +82,8 @@ class Services(db.Model):
             "department_code":departmentId,
             "department_name":departmentName,
             "user": token,
-            "description":serviceInfo.descripcion
+            "description":serviceInfo.descripcion,
+            "category": serviceInfo.categorias.idcategoria
         }
         return service
 

@@ -13,13 +13,14 @@ services = Blueprint('service_routes', __name__)
 @services.route('/')
 def showServices():
     services = Services.getIndexPageServices()
+    print(services)
     return jsonify(services)
 
 
 @services.route('/avg', methods=["POST"])
 def getAverage():
     getInfo = request.json
-    average = Qualification.getQualificationsAverage(getInfo["id"])
+    average = Qualification.getQualificationsAverage(getInfo["userId"])
     return jsonify(average)
 
 
