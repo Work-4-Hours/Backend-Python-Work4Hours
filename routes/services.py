@@ -88,8 +88,8 @@ def getUserServices(userId):
     userInfo = {}
     services = []
     try:
-        if (validate_token(token,True)['id']):
-            services,userInfo = Services.getServicesFromUser(userId,token)
+        if (validate_token(token,True)['userId']):
+            services,userInfo = Services.getServicesFromUser(userId)
     except:
         raise Exception("Invalid Token")
     else:

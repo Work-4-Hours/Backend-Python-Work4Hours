@@ -134,11 +134,19 @@ class Users(db.Model):
 
 
     #Function to search all users in the app
-    def searchUserInfoFromToken(encryptedId):
+    def searchUserInfo(userId):
         user = {}
-        userId = validate_token(encryptedId,True)
-        try:
-            result = db.session.execute(select(Users).filter(Users.idusuario == userId.get('userId')))
+        try:           
+            if (type(userId) != int):
+                decryptedUserId = validate_token(userId,True)
+                result = db.session.execute(select(Users).filter(Users.idusuario == decryptedUserId.get('userId')))
+            else:
+                result = db.session.execute(select(Users).filter(Users.idusuario == userId))
+        except UnicodeDecodeError as err:
+            raise err
+        except:
+            raise('Cannot connect to DB')
+        else:
             for usersInfo in result.scalars():
                 user = {
                     "name" : usersInfo.nombres,
@@ -149,7 +157,5 @@ class Users(db.Model):
                     "color": usersInfo.color
                 }
             db.session.commit()
-        except:
-            raise Exception(userId.status_code)
-        else:
             return user
+
