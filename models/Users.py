@@ -143,9 +143,9 @@ class Users(db.Model):
             else:
                 result = db.session.execute(select(Users).filter(Users.idusuario == userId))
         except UnicodeDecodeError as err:
-            raise err
-        except:
-            raise('Cannot connect to DB')
+            raise(err)
+        except ConnectionAbortedError as err:
+            raise(err)
         else:
             for usersInfo in result.scalars():
                 user = {

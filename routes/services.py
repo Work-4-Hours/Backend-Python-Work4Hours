@@ -79,7 +79,8 @@ def updateService():
 @services.route('/serviceInfo/<int:serviceId>',methods=["POST"])
 def getServiceInfo(serviceId):
     serviceInfo = Services.getServiceInfo(serviceId)
-    return jsonify(serviceInfo)
+    serviceQualification = Qualification.getQualificationsAverage(serviceId)
+    return jsonify(serviceInfo,serviceQualification)
 
 
 @services.route('/getUserServices/<int:userId>')

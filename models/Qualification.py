@@ -1,5 +1,7 @@
+from cgitb import text
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, update
+from sqlalchemy.sql import text
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import func
 from models.Services import Services
@@ -20,14 +22,18 @@ class Qualification(db.Model):
         self.idservicio = idservicio
 
 
-    def getQualificationsAverage(serviceId):
+    def getQualificationsAverage(serviceId : int) -> dict:
         averageQualification = {}
         query = db.session.query(func.avg(Qualification.calificacion)).filter(Qualification.idservicio == serviceId)
         result = db.session.execute(query)
         for average in result.scalars():
             averageQualification = {
-                "average": average,
-            }
+                "qualification" : average
+            } 
+        db.session.execute(text("UPDATE servicios SET calificacion = :average WHERE idservicio = :serviceId").bindparams(
+        average = averageQualification['qualification'],
+        serviceId = serviceId
+        ))
         db.session.commit()
         return averageQualification
 
@@ -36,6 +42,8 @@ class Qualification(db.Model):
         newQualification = Qualification(qualification,userId,serviceId)
         db.session.add(newQualification)
         db.session.commit()
+
+
 
 
 
