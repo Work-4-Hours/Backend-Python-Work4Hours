@@ -8,7 +8,6 @@ from models.Users import Users
 from models.Appeals import Appeals
 from models.Departament import Departament
 from models.City import City
-from models.Departament import Departament
 from jwt_Functions import write_token
 
 
@@ -47,7 +46,7 @@ class Services(db.Model):
 
     def getIndexPageServices() -> list :
         services = []
-        query = db.session.query(Services).filter(Services.calificacion >= 4).limit(20)
+        query = db.session.query(Services).filter(Services.calificacion >= 4.0).filter(Services.estado == 1).limit(20)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
             services.append(
@@ -62,8 +61,7 @@ class Services(db.Model):
         query = db.session.execute(db.session.query(Services).filter(Services.idservicio == serviceId))
         for serviceInfo in query.scalars():
             service = Services.extractServiceInfo(serviceInfo)
-        user = Users.searchUserInfo(service.get('user'))
-
+        user = Users.searchUserInfo(service['user'])
         db.session.commit()
         return {"serviceInfo":service,"serviceUser":user}
 
@@ -83,7 +81,8 @@ class Services(db.Model):
             "department_code":departmentId,
             "department_name":departmentName,
             "user": token,
-            "description":serviceInfo.descripcion
+            "description":serviceInfo.descripcion,
+            "category": serviceInfo.categorias.idcategoria
         }
         return service
 
@@ -96,7 +95,7 @@ class Services(db.Model):
 
     def searchAllServicesInfo(nombreServicio: str) -> list :
         services = []
-        query = db.session.query(Services).filter(Services.nombre.like('%{}%'.format(nombreServicio)))
+        query = db.session.query(Services).filter(Services.nombre.like('%{}%'.format(nombreServicio))).filter(Services.estado == 1)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
             services.append(
@@ -112,22 +111,37 @@ class Services(db.Model):
         return True
                
         
-    def updateServiceInfo(serviceId:int , categoryId:str , name:str , photo:str, type:str , price:int , description:str):
+    def updateServiceInfo(serviceId:int , categoryId:str , name:str , photo:str, type:str , price:int , description:str, status:int):
         db.session.execute(
-            text("UPDATE servicios SET idcategoria = :categoryId, nombre = :name, foto = :photo, tipo= :type, precio = :price, descripcion= :description WHERE idservicio = :serviceId").bindparams(
+            text("UPDATE servicios SET idcategoria = :categoryId, nombre = :name, foto = :photo, tipo= :type, precio = :price, descripcion= :description, estado = :status WHERE idservicio = :serviceId").bindparams(
                     categoryId = categoryId,
                     serviceId = serviceId,
                     name = name,
                     photo = photo,
                     type = type,
                     price = price,
-                    description = description
+                    description = description,
+                    status = status,
                 )
         )
         db.session.commit()
         return True
 
         
+    def getServicesFromUser(userId:int):
+        try:
+            userInfo = Users.searchUserInfo(userId)
+            services = []
+            result = db.session.execute(db.session.query(Services).filter(Services.usuario == userId))
+            for serviceInfo in result.scalars():
+                services.append(
+                    Services.extractServiceInfo(serviceInfo)
+                )
+            db.session.commit()
+        except:
+            raise Exception("Invalid Id")
+        else:
+            return services,userInfo
 
 
     

@@ -1,9 +1,15 @@
+from email import message
 from flask import Blueprint, json, jsonify, request
+from sqlalchemy import true
+from models.Qualification import Qualification
 from models.Services import Services
 from models.Users import Users
 from models.Departament import Departament
 from models.City import City
+from models.Appeals import Appeals
 from utils.db import db
+from jwt_Functions import validate_token
+
 
 user = Blueprint('user_routes', __name__)
 
@@ -15,8 +21,13 @@ def user_login():
     password = userInfo["password"]
 
     userInfo = Users.login(email,password)
-
-    return jsonify({"userInfo":userInfo})
+    try:
+        userId = validate_token(userInfo["token"],True)
+        qualification = Qualification.getUserQualificationAvg(userId["userId"])
+    except ConnectionAbortedError as err:
+        raise(err)
+    else:
+        return jsonify({"userInfo":userInfo},qualification)
 
 
 @user.route('/departments', methods=['GET'])
@@ -48,10 +59,43 @@ def user_registry():
     return jsonify({"user":user})
 
 
-@user.route('/getUser/<int:userId>', methods=["POST"])
-def getUser(userId):
-    user = Users.searchUserInfo(userId)
+@user.route('/getUser', methods=["POST"])
+def getUser():
+    token = request.headers["authorization"].split(' ')[1]
+    user = Users.searchUserInfo(token)
     return jsonify({"serviceUser":user})
+
+
+@user.route('/allowChanges/<email>/<password>', methods=["POST"])
+def allowChanges(email,password):
+    token = request.headers["authorization"].split(' ')[1]
+    response = ""
+    try:
+        if (validate_token(token,True)['userId']):
+            userRes = Users.getExistantUser(email,password,1)
+            if(userRes[1].get('userId')):
+                response = True
+            else:
+                response = False 
+    except:
+        raise Exception("Invalid Token")
+    else:
+        return jsonify(response)
+
+
+@user.route('/appeal')
+def appealService():
+    token = request.headers["authorization"]
+    userInfo = request.json 
+    email = userInfo["email"]
+    serviceId = userInfo["serviceId"]
+    description = userInfo["description"]
+    Appeals(description,serviceId)
+    return true
+    
+
+
+    
     
 
  

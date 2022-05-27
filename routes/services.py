@@ -5,6 +5,7 @@ from flask import Blueprint, json, jsonify, request, session, render_template
 from models.Services import Services
 from models.Qualification import Qualification
 from utils.db import db
+from jwt_Functions import validate_token
 
 
 services = Blueprint('service_routes', __name__)
@@ -12,13 +13,14 @@ services = Blueprint('service_routes', __name__)
 @services.route('/')
 def showServices():
     services = Services.getIndexPageServices()
+    print(services)
     return jsonify(services)
 
 
 @services.route('/avg', methods=["POST"])
 def getAverage():
     getInfo = request.json
-    average = Qualification.getQualificationsAverage(getInfo["id"])
+    average = Qualification.getQualificationsAverage(getInfo["userId"])
     return jsonify(average)
 
 
@@ -70,10 +72,25 @@ def updateService():
     sPrice = serviceNewInfo["price"]
     sCategory = serviceNewInfo["category"]
     sDescription = serviceNewInfo["description"]
-    res = Services.updateServiceInfo(sId,sCategory,sName,sPhoto,sType,sPrice,sDescription)
+    sStatus = serviceNewInfo["status"]
+    res = Services.updateServiceInfo(sId,sCategory,sName,sPhoto,sType,sPrice,sDescription,sStatus)
     return jsonify(res)
 
 @services.route('/serviceInfo/<int:serviceId>',methods=["POST"])
 def getServiceInfo(serviceId):
     serviceInfo = Services.getServiceInfo(serviceId)
-    return jsonify(serviceInfo)
+    serviceQualification = Qualification.getQualificationsAverage(serviceId)
+    return jsonify(serviceInfo,serviceQualification)
+
+
+@services.route('/getUserServices/<int:userId>')
+def getUserServices(userId):
+    token = request.headers["authorization"].split(' ')[1]
+    try:
+        if (validate_token(token,True)['userId']):
+            services,userInfo = Services.getServicesFromUser(userId)
+            qualification = Qualification.getUserQualificationAvg(userId)
+    except:
+        raise Exception("Invalid Token")
+    else:
+        return jsonify(services,userInfo,qualification)

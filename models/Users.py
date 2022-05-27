@@ -12,7 +12,6 @@ from config import salt
 import bcrypt
 
 
-
 class Users(db.Model):
     __tablename__ = 'usuarios'
     idusuario = db.Column(db.Integer, primary_key=True)
@@ -99,10 +98,12 @@ class Users(db.Model):
                 "email" : userInfo.correo,
                 "status" : userInfo.estado,
                 "userPicture" : userInfo.fotop,
-                "color": userInfo.color
+                "phoneNumber": userInfo.celular,
+                "birthDate": userInfo.fnac,
+                "color": userInfo.color,
             },
             userId = {
-                "id" : userInfo.idusuario,
+                "userId" : userInfo.idusuario,
                 "rol" : userInfo.rol
             }
         return user,userId
@@ -132,18 +133,28 @@ class Users(db.Model):
 
 
     #Function to search all users in the app
-    def searchUserInfo(encryptedId):
+    def searchUserInfo(userId):
         user = {}
-        userId = validate_token(encryptedId,True)
-        result = db.session.execute(select(Users).filter(Users.idusuario == userId.get('userId')))
-        for usersInfo in result.scalars():
-            user = {
-                "name" : usersInfo.nombres,
-                "lastName" : usersInfo.apellidos,
-                "photo": usersInfo.fotop,
-                "phoneNumber": usersInfo.celular,
-                "email": usersInfo.correo,
-                "color": usersInfo.color
-            }
-        db.session.commit()
-        return user
+        try:           
+            if (type(userId) != int):
+                decryptedUserId = validate_token(userId,True)
+                result = db.session.execute(select(Users).filter(Users.idusuario == decryptedUserId.get('userId')))
+            else:
+                result = db.session.execute(select(Users).filter(Users.idusuario == userId))
+        except UnicodeDecodeError as err:
+            raise(err)
+        except ConnectionAbortedError as err:
+            raise(err)
+        else:
+            for usersInfo in result.scalars():
+                user = {
+                    "name" : usersInfo.nombres,
+                    "lastName" : usersInfo.apellidos,
+                    "photo": usersInfo.fotop,
+                    "phoneNumber": usersInfo.celular,
+                    "email": usersInfo.correo,
+                    "color": usersInfo.color,
+                }
+            db.session.commit()
+            return user
+
