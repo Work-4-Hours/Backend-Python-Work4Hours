@@ -12,7 +12,6 @@ from config import salt
 import bcrypt
 
 
-
 class Users(db.Model):
     __tablename__ = 'usuarios'
     idusuario = db.Column(db.Integer, primary_key=True)
@@ -101,7 +100,7 @@ class Users(db.Model):
                 "userPicture" : userInfo.fotop,
                 "phoneNumber": userInfo.celular,
                 "birthDate": userInfo.fnac,
-                "color": userInfo.color
+                "color": userInfo.color,
             },
             userId = {
                 "userId" : userInfo.idusuario,
@@ -154,7 +153,7 @@ class Users(db.Model):
                     "photo": usersInfo.fotop,
                     "phoneNumber": usersInfo.celular,
                     "email": usersInfo.correo,
-                    "color": usersInfo.color
+                    "color": usersInfo.color,
                 }
             db.session.commit()
             return user

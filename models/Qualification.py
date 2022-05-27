@@ -38,13 +38,23 @@ class Qualification(db.Model):
         return averageQualification
 
 
-    def addQualification(qualification,userId,serviceId):
+    def addQualification(qualification:float,userId:int,serviceId:int) -> None:
         newQualification = Qualification(qualification,userId,serviceId)
         db.session.add(newQualification)
         db.session.commit()
 
 
-
+    def getUserQualificationAvg(userId:int) -> dict:
+        avgQualification = {}
+        result = db.session.execute(text("SELECT AVG(s.calificacion) FROM servicios s RIGHT JOIN usuarios u ON u.idusuario = s.usuario WHERE u.idusuario = :userId").bindparams(
+            userId = userId
+        ))
+        for average in result.scalars():
+            avgQualification = {
+                "qualification" : average
+            }
+        db.session.commit()
+        return avgQualification
 
 
         

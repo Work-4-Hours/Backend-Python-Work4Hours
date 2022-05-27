@@ -8,7 +8,6 @@ from models.Users import Users
 from models.Appeals import Appeals
 from models.Departament import Departament
 from models.City import City
-from models.Departament import Departament
 from jwt_Functions import write_token
 
 

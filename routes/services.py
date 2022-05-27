@@ -86,12 +86,11 @@ def getServiceInfo(serviceId):
 @services.route('/getUserServices/<int:userId>')
 def getUserServices(userId):
     token = request.headers["authorization"].split(' ')[1]
-    userInfo = {}
-    services = []
     try:
         if (validate_token(token,True)['userId']):
             services,userInfo = Services.getServicesFromUser(userId)
+            qualification = Qualification.getUserQualificationAvg(userId)
     except:
         raise Exception("Invalid Token")
     else:
-        return jsonify(services,userInfo)
+        return jsonify(services,userInfo,qualification)
