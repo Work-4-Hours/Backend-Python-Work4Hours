@@ -42,7 +42,7 @@ class Users(db.Model):
         self.fnac = fnac
         self.fotop = fotop
         self.ciudad = ciudad
-        self.rol = 1
+        self.rol = 2
         self.estado = 1
         self.color = color
 
@@ -62,23 +62,20 @@ class Users(db.Model):
 
     #Function to get the password from de db and decrypt it if it exist
     def getDecryptedUserPassword(password : str, email : str) -> bool :
-        decryptedPassword = ""
+        decryptedPassword = False
         queryPassword =select(Users.contrasenna).where(Users.correo == email)
         passwordResult = db.session.execute(queryPassword)
         for dbpassword in passwordResult.scalars():
             if (dbpassword):
                 decryptedPassword = Users.decryptPassword(password,dbpassword)
-            else:
-                decryptedPassword = False
         return decryptedPassword 
 
 
     #function to validate existance of an user in db: 
-    def getExistantUser(email,password, type):
+    def getExistantUser(email:str , password:str , type:int) -> dict :
         userId = {}
         user = {}
-        query = db.session.query(Users).filter(Users.correo == email)
-        result = db.session.execute(query)
+        result = db.session.execute(db.session.query(Users).filter(Users.correo == email))
         if(result.scalars() and type == 1):
             if(Users.getDecryptedUserPassword(password,email)):
                 user, userId = Users.getUserInfo(result.scalars())
@@ -110,8 +107,8 @@ class Users(db.Model):
 
 
     #Function to decide if the user must be registered
-    def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad,color):
-        user, userId = Users.getExistantUser(correo,contrasenna,0)
+    def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad,color) -> dict :
+        user= Users.getExistantUser(correo,contrasenna,0)
         if(bool(user) == False):
             encryptedPassword = Users.encryptPassword(contrasenna)
             newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad,color)
@@ -123,7 +120,7 @@ class Users(db.Model):
 
 
     #Function to look for a user in DB and take his info:
-    def login(email,password):
+    def login(email:str , password:str) -> dict :
         user, userId = Users.getExistantUser(email,password,1)
         if (user):
             token = str(write_token(userId)).split("'")[1]
