@@ -1,4 +1,3 @@
-
 from distutils.log import info
 from re import search
 from flask import Blueprint, json, jsonify, request, session, render_template
@@ -11,16 +10,16 @@ from jwt_Functions import validate_token
 services = Blueprint('service_routes', __name__)
 
 @services.route('/')
-def showServices():
-    services = Services.getIndexPageServices()
+def show_services():
+    services = Services.get_index_page_services()
     print(services)
     return jsonify(services)
 
 
 @services.route('/avg', methods=["POST"])
-def getAverage():
+def get_average():
     getInfo = request.json
-    average = Qualification.getQualificationsAverage(getInfo["userId"])
+    average = Qualification.get_qualifications_average(getInfo["userId"])
     return jsonify(average)
 
 
@@ -36,7 +35,7 @@ def service_registry():
     photo = serviceInfo["photo"]
     user = serviceInfo["user"]
 
-    service = Services.validateService(categories,name,statuses,type,price,description,photo,user)
+    service = Services.create_service(categories,name,statuses,type,price,description,photo,user)
     return jsonify(service)
 
 
@@ -44,26 +43,26 @@ def service_registry():
 def search():
     serviceInfo = request.json  
     nombre = serviceInfo["serviceName"]
-    serviceInfo = Services.searchAllServicesInfo(nombre)
+    serviceInfo = Services.search_all_services_info(nombre)
     return jsonify(serviceInfo)
     
 
 @services.route('/addQualification')
-def addQ():
+def add_qualification():
     serviceInfo = request.json
     calificacion = serviceInfo["calificacion"]
-    serviceInfo = Services.addQualification(calificacion)
+    serviceInfo = Qualification.add_qualification(calificacion)
     return jsonify(serviceInfo)
 
 
 @services.route('/deleteService/<int:serviceId>')
-def deleteService(serviceId = None):
-    isDeleted = Services.deleteService(serviceId)
+def delete_service(serviceId = None):
+    isDeleted = Services.delete_service(serviceId)
     return jsonify(isDeleted)
 
 
 @services.route('/updateService', methods=["POST"])
-def updateService():
+def update_service():
     serviceNewInfo = request.json
     sId = serviceNewInfo["id"]
     sName = serviceNewInfo["name"]
@@ -73,23 +72,23 @@ def updateService():
     sCategory = serviceNewInfo["category"]
     sDescription = serviceNewInfo["description"]
     sStatus = serviceNewInfo["status"]
-    res = Services.updateServiceInfo(sId,sCategory,sName,sPhoto,sType,sPrice,sDescription,sStatus)
+    res = Services.update_service_info(sId,sCategory,sName,sPhoto,sType,sPrice,sDescription,sStatus)
     return jsonify(res)
 
 @services.route('/serviceInfo/<int:serviceId>',methods=["POST"])
-def getServiceInfo(serviceId):
-    serviceInfo = Services.getServiceInfo(serviceId)
-    serviceQualification = Qualification.getQualificationsAverage(serviceId)
+def get_service_info(serviceId):
+    serviceInfo = Services.get_service_info(serviceId)
+    serviceQualification = Qualification.get_qualifications_average(serviceId)
     return jsonify(serviceInfo,serviceQualification)
 
 
 @services.route('/getUserServices/<int:userId>')
-def getUserServices(userId):
+def get_user_services(userId):
     token = request.headers["authorization"].split(' ')[1]
     try:
         if (validate_token(token,True)['userId']):
-            services,userInfo = Services.getServicesFromUser(userId)
-            qualification = Qualification.getUserQualificationAvg(userId)
+            services,userInfo = Services.get_services_from_user(userId)
+            qualification = Qualification.get_user_qualification_avg(userId)
     except:
         raise Exception("Invalid Token")
     else:

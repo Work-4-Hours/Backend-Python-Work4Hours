@@ -48,44 +48,44 @@ class Users(db.Model):
 
 
     #Function to decrypt passwords
-    def decryptPassword(password : str, dbHashedPWD: str):
+    def decrypt_password(password : str, dbHashedPWD: str):
         encodedPassword = password.encode(encoding='UTF-8')
         encodedHash = dbHashedPWD.encode(encoding='UTF-8')
         return bcrypt.checkpw(encodedPassword,encodedHash)
 
 
     #Funtion to encrypt passwords
-    def encryptPassword(password):
+    def encrypt_password(password):
         encoded = bytes(password.encode(encoding='UTF-8'))
         return bcrypt.hashpw(encoded,salt)
 
 
     #Function to get the password from de db and decrypt it if it exist
-    def getDecryptedUserPassword(password : str, email : str) -> bool :
+    def get_decrypted_user_password(self,password : str, email : str) :
         decryptedPassword = False
-        queryPassword =select(Users.contrasenna).where(Users.correo == email)
+        queryPassword =select(self.contrasenna).where(self.correo == email)
         passwordResult = db.session.execute(queryPassword)
         for dbpassword in passwordResult.scalars():
             if (dbpassword):
-                decryptedPassword = Users.decryptPassword(password,dbpassword)
+                decryptedPassword = self.decrypt_password(password,dbpassword)
         return decryptedPassword 
 
 
     #function to validate existance of an user in db: 
-    def getExistantUser(email:str , password:str , type:int) -> dict :
+    def get_existant_user(self,email:str , password:str , type:int) :
         userId = {}
         user = {}
-        result = db.session.execute(db.session.query(Users).filter(Users.correo == email))
+        result = db.session.execute(db.session.query(Users).filter(self.correo == email))
         if(result.scalars() and type == 1):
-            if(Users.getDecryptedUserPassword(password,email)):
-                user, userId = Users.getUserInfo(result.scalars())
+            if(self.get_decrypted_user_password(password,email)):
+                user, userId = self.get_user_info(result.scalars())
         elif(result.scalars() and type == 0):
-            user, userId = Users.getUserInfo(result.scalars())
+            user, userId = self.get_user_info(result.scalars())
         db.session.commit()
         return user, userId
 
 
-    def getUserInfo(result):
+    def get_user_info(result):
         userId = {}
         user = {}
         for userInfo in result:
@@ -107,10 +107,10 @@ class Users(db.Model):
 
 
     #Function to decide if the user must be registered
-    def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad,color) -> dict :
-        user= Users.getExistantUser(correo,contrasenna,0)
+    def validate_registry(self,nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad,color):
+        user= self.get_existant_user(correo,contrasenna,0)
         if(bool(user) == False):
-            encryptedPassword = Users.encryptPassword(contrasenna)
+            encryptedPassword = self.encrypt_password(contrasenna)
             newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad,color)
             db.session.add(newUser)
             db.session.commit()
@@ -120,8 +120,8 @@ class Users(db.Model):
 
 
     #Function to look for a user in DB and take his info:
-    def login(email:str , password:str) -> dict :
-        user, userId = Users.getExistantUser(email,password,1)
+    def login(self,email:str , password:str):
+        user, userId = self.get_existant_user(email,password,1)
         if (user):
             token = str(write_token(userId)).split("'")[1]
             return {"token":token, "info":user, "exist": True}
@@ -130,14 +130,14 @@ class Users(db.Model):
 
 
     #Function to search all users in the app
-    def searchUserInfo(userId):
+    def search_user_info(self,userId):
         user = {}
         try:           
             if (type(userId) != int):
                 decryptedUserId = validate_token(userId,True)
-                result = db.session.execute(select(Users).filter(Users.idusuario == decryptedUserId.get('userId')))
+                result = db.session.execute(select(Users).filter(self.idusuario == decryptedUserId.get('userId')))
             else:
-                result = db.session.execute(select(Users).filter(Users.idusuario == userId))
+                result = db.session.execute(select(Users).filter(self.idusuario == userId))
         except UnicodeDecodeError as err:
             raise(err)
         except ConnectionAbortedError as err:

@@ -1,5 +1,3 @@
-from email import message
-import email
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import Union

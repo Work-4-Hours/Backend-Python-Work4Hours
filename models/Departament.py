@@ -11,16 +11,16 @@ class Departament(db.Model):
         self.nombre= nombre
 
     
-    def getDepartmentInfo(departmentId:Integer):
+    def get_department_info(self,departmentId:Integer):
         departmentName = ""
-        departmentQuery = db.session.query(Departament.nombre).filter(Departament.iddepartamento == departmentId)
+        departmentQuery = db.session.query(self.nombre).filter(self.iddepartamento == departmentId)
         departmentInfo = db.session.execute(departmentQuery)
         for department in departmentInfo.scalars():
             departmentName = department
         db.session.commit()
         return departmentName
 
-    def getAllDepartments():
+    def get_all_departments():
         departments = []
         departmentsQuery = db.session.query(Departament)
         departmentsInfo = db.session.execute(departmentsQuery)
