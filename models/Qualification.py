@@ -21,13 +21,13 @@ class Qualification(db.Model):
         self.idusuario = idusuario
         self.idservicio = idservicio
 
-
-    def add_qualification(qualification:float,userId:int,serviceId:int) -> None:
+    @classmethod
+    def add_qualification(self,qualification:float,userId:int,serviceId:int) -> None:
         newQualification = Qualification(qualification,userId,serviceId)
         db.session.add(newQualification)
         db.session.commit()
 
-
+    @classmethod
     def get_qualifications_average(self,serviceId : int) -> dict:
         averageQualification = {}
         query = db.session.query(func.avg(self.calificacion)).filter(self.idservicio == serviceId)
@@ -43,8 +43,8 @@ class Qualification(db.Model):
         db.session.commit()
         return averageQualification
 
-
-    def get_user_qualification_avg(userId:int) -> dict:
+    @classmethod
+    def get_user_qualification_avg(self,userId:int) -> dict:
         avgQualification = {}
         result = db.session.execute(text("SELECT AVG(s.calificacion) FROM servicios s RIGHT JOIN usuarios u ON u.idusuario = s.usuario WHERE u.idusuario = :userId").bindparams(
             userId = userId

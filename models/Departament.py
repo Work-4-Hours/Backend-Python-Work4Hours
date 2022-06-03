@@ -11,6 +11,7 @@ class Departament(db.Model):
         self.nombre= nombre
 
     
+    @classmethod
     def get_department_info(self,departmentId:Integer):
         departmentName = ""
         departmentQuery = db.session.query(self.nombre).filter(self.iddepartamento == departmentId)
@@ -20,7 +21,9 @@ class Departament(db.Model):
         db.session.commit()
         return departmentName
 
-    def get_all_departments():
+
+    @classmethod
+    def get_all_departments(self):
         departments = []
         departmentsQuery = db.session.query(Departament)
         departmentsInfo = db.session.execute(departmentsQuery)

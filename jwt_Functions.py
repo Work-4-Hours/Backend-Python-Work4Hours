@@ -17,7 +17,11 @@ def expire_date(days:int):
 
 
 def write_token(data :dict) :
-    token=encode(payload={**data,"exp":expire_date(2)},key=os.environ["SECRET"],algorithm=os.environ["DECODE_ALGORITHM"])
+    token=encode(
+        payload={**data,"exp":expire_date(2)},
+        key=os.environ["SECRET"],
+        algorithm=os.environ["DECODE_ALGORITHM"]
+    )
     return token.encode("UTF-8")
 
 #funcion validar el token y retornar el dato que se le envia 

@@ -44,6 +44,7 @@ class Services(db.Model):
         self.usuario=usuario
 
 
+    @classmethod
     def get_index_page_services(self) -> list :
         services = []
         query = db.session.query(Services).filter(self.calificacion >= 4.0).filter(self.estado == 1).limit(20)
@@ -56,6 +57,7 @@ class Services(db.Model):
         return services
 
     
+    @classmethod
     def get_service_info(self,serviceId):
         service = ""
         query = db.session.execute(db.session.query(Services).filter(self.idservicio == serviceId))
@@ -66,7 +68,8 @@ class Services(db.Model):
         return {"serviceInfo":service,"serviceUser":user}
 
 
-    def extract_service_info(serviceInfo):
+    @classmethod
+    def extract_service_info(self,serviceInfo):
         service = {}
         departmentId,cityId,cityName = City.get_city_info(serviceInfo.idservicio,serviceInfo.usuario)
         departmentName = Departament.get_department_info(departmentId)
@@ -87,12 +90,14 @@ class Services(db.Model):
         return service
 
     
-    def create_service(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario):
+    @classmethod
+    def create_service(self,idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario):
         newService = Services(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario)
         db.session.add(newService)
         db.session.commit()
 
 
+    @classmethod
     def search_all_services_info(self,nombreServicio: str) -> list :
         services = []
         query = db.session.query(Services).filter(self.nombre.like('%{}%'.format(nombreServicio))).filter(self.estado == 1)
@@ -105,13 +110,15 @@ class Services(db.Model):
         return services
 
 
+    @classmethod
     def delete_service(self,serviceId:int):
         db.session.execute(delete(Services).filter(self.idservicio == serviceId))
         db.session.commit()
         return True
                
-        
-    def update_service_info(serviceId:int , categoryId:str , name:str , photo:str, type:str , price:int , description:str, status:int):
+
+    @classmethod        
+    def update_service_info(self,serviceId:int , categoryId:str , name:str , photo:str, type:str , price:int , description:str, status:int):
         db.session.execute(
             text("UPDATE servicios SET idcategoria = :categoryId, nombre = :name, foto = :photo, tipo= :type, precio = :price, descripcion= :description, estado = :status WHERE idservicio = :serviceId").bindparams(
                     categoryId = categoryId,
@@ -128,6 +135,7 @@ class Services(db.Model):
         return True
 
         
+    @classmethod
     def get_services_from_user(self,userId:int):
         try:
             userInfo = Users.search_user_info(userId)

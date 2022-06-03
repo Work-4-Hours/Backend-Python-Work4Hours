@@ -17,7 +17,8 @@ class City(db.Model):
         self.iddepartamento=iddepartamento
 
 
-    def get_city_info(serviceId:Integer,userId:Integer):
+    @classmethod
+    def get_city_info(self,serviceId:Integer,userId:Integer):
         departmentId = ""
         cityId = ""
         cityName = ""
@@ -33,6 +34,7 @@ class City(db.Model):
         return departmentId,cityId,cityName
 
 
+    @classmethod
     def get_all_cities_from_department(self,departmentId:Integer):
         cities = []
         citiesQuery = db.session.query(City).filter(self.iddepartamento == departmentId)
