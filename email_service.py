@@ -2,7 +2,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import Union
 from smtplib import SMTP
-from os import getenv
+
+from config import settings
 
 class EmailService:
 
@@ -12,13 +13,13 @@ class EmailService:
 
     def _create_connection(self):
         self.client.connect(
-            host= getenv('SMTP_HOST'),
-            port= getenv('SMTP_PORT')
+            host=settings.SMTP_HOST,
+            port=settings.SMTP_PORT
         )
         self.client.starttls()
         self.client.login(
-            user= getenv('SMTP_USERNAME'),
-            password= getenv('SMTP_PASSWORD')
+            user=settings.SMTP_USERNAME,
+            password=settings.SMTP_PASSWORD
         )
 
 
@@ -30,11 +31,11 @@ class EmailService:
             mime = MIMEMultipart()
             mime['To'] = email
             mime['Subject'] = subject
-            mime['From'] = getenv('SMTP_USERNAME')
+            mime['From'] = settings.SMTP_USERNAME
             email_format = MIMEText(kwargs.get('message'),kwargs.get('format')) 
             mime.attach(email_format)
             try:
-                self.client.sendmail(getenv('SMTP_USERNAME'),email,email_format.as_string())
+                self.client.sendmail(settings.SMTP_USERNAME, email, email_format.as_string())
             except:
                 return "hola"
             finally:

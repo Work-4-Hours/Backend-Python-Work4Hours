@@ -7,13 +7,12 @@ from models.City import City
 from models.Rol import Rol
 from models.Statuses import Statuses
 from jwt_Functions import write_token, validate_token
-import os
 from config import salt
 import bcrypt
 
 
 class Users(db.Model):
-    __tablename__ = 'usuarios'
+    __tablename__ = 'Users'
     idusuario = db.Column(db.Integer, primary_key=True)
     nombres = db.Column(db.String(60), nullable= False)
     apellidos = db.Column(db.String(60), nullable= False)

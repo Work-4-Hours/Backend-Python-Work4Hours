@@ -5,6 +5,8 @@ from models.Users import Users
 from models.Departament import Departament
 from models.City import City
 from models.Appeals import Appeals
+from services.user_service import UserService
+from schemas import UserLogin, UserSignup
 from utils.db import db
 from jwt_Functions import validate_token
 from email_service import email_client
@@ -15,7 +17,13 @@ user = Blueprint('user_routes', __name__)
 
 @user.route('/login', methods=['POST'])
 def user_login():
-    userInfo = request.json
+    print(request.json)
+    user_to_login = UserLogin(**request.json)
+    user = UserService.login(user_to_login)
+    if not user:
+        return {"exist":False}
+    return user.dict()
+    """userInfo = request.json
     email = userInfo["email"]
     password = userInfo["password"]
 
@@ -26,7 +34,7 @@ def user_login():
     except ConnectionAbortedError as err:
         raise(err)
     else:
-        return jsonify({"userInfo":userInfo},qualification)
+        return jsonify({"userInfo":userInfo},qualification)"""
 
 
 @user.route('/departments', methods=['GET'])
