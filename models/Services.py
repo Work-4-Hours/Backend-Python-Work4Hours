@@ -31,7 +31,6 @@ class Services(db.Model):
     apelacion = db.Column(db.Integer,ForeignKey('apelaciones.idapelacion'),nullable=True)
     apelaciones = relationship(Appeals, backref= backref('servicios'),uselist= True)
     calificacion = db.Column(db.Float(), nullable=False)
-         
 
 
     def __init__(self, idcategoria, nombre, estado, tipo, precio, descripcion, foto, usuario):
@@ -56,16 +55,6 @@ class Services(db.Model):
             )
         db.session.commit()
         return services
-
-<<<<<<< HEAD
-    def getServiceInfo(serviceId:int):
-        service = ""
-        query = db.session.query(Services).filter(Services.idservicio == serviceId)
-        result = db.session.execute(query)
-        for serviceInfo in result.scalars():
-            service = Services.extractServiceInfo(serviceInfo)
-        return service
-=======
     
     @classmethod
     def get_service_info(self,serviceId):
@@ -76,8 +65,6 @@ class Services(db.Model):
         user = Users.search_user_info(service['user'])
         db.session.commit()
         return {"serviceInfo":service,"serviceUser":user}
->>>>>>> ba60fe0b2d757d1adac4cfc82c4a0506d78dc251
-
 
     @classmethod
     def extract_service_info(self,serviceInfo):
@@ -126,7 +113,7 @@ class Services(db.Model):
         db.session.execute(delete(Services).filter(self.idservicio == serviceId))
         db.session.commit()
         return True
-               
+
 
     @classmethod        
     def update_service_info(self,serviceId:int , categoryId:str , name:str , photo:str, type:str , price:int , description:str, status:int):

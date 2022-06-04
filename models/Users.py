@@ -50,12 +50,8 @@ class Users(db.Model):
 
 
     #Function to decrypt passwords
-<<<<<<< HEAD
-    def decryptPassword(password : str, dbHashedPWD: str) -> bool:
-=======
     @staticmethod
     def decrypt_password(password : str, dbHashedPWD: str):
->>>>>>> ba60fe0b2d757d1adac4cfc82c4a0506d78dc251
         encodedPassword = password.encode(encoding='UTF-8')
         encodedHash = dbHashedPWD.encode(encoding='UTF-8')
         return bcrypt.checkpw(encodedPassword,encodedHash)
@@ -68,11 +64,6 @@ class Users(db.Model):
         encoded = bytes(password.encode(encoding='UTF-8'))
         return bcrypt.hashpw(encoded,salt)
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> ba60fe0b2d757d1adac4cfc82c4a0506d78dc251
     #Function to get the password from de db and decrypt it if it exist
     @classmethod
     def get_decrypted_user_password(self,password : str, email : str) :
@@ -101,14 +92,8 @@ class Users(db.Model):
         return user, userId
         
 
-<<<<<<< HEAD
-
-
-    def getUserInfo(result):
-=======
     @classmethod
     def get_user_info(self,result):
->>>>>>> ba60fe0b2d757d1adac4cfc82c4a0506d78dc251
         userId = {}
         user = {}
         for userInfo in result:
@@ -131,13 +116,6 @@ class Users(db.Model):
 
 
     #Function to decide if the user must be registered
-<<<<<<< HEAD
-    def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad):
-        user, userId = Users.getExistantUser(correo,contrasenna,0)
-        if(bool(user) == False):
-            encryptedPassword = Users.encryptPassword(contrasenna)
-            newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad)
-=======
     @classmethod
     def validate_registry(self,nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad,color):
         user,userId = self.get_existant_user(correo,contrasenna,0)
@@ -146,7 +124,6 @@ class Users(db.Model):
         else:
             encryptedPassword = Users.encrypt_password(contrasenna)
             newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad,color)
->>>>>>> ba60fe0b2d757d1adac4cfc82c4a0506d78dc251
             db.session.add(newUser)
             db.session.commit()
             return {"exist": "new User created"}
