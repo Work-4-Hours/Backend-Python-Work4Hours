@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'work4hours'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E09B57909C864364BBC9077EB1B98C7E }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4E0A28821AF54E23BB9C52443E329ABE }}
