@@ -1,9 +1,14 @@
 from flask import Blueprint, json, jsonify, request
+from models.Qualification import Qualification
 from models.Services import Services
 from models.Users import Users
 from models.Departament import Departament
 from models.City import City
+from models.Appeals import Appeals
 from utils.db import db
+from jwt_Functions import validate_token
+from email_service import email_client
+
 
 user = Blueprint('user_routes', __name__)
 
@@ -15,19 +20,24 @@ def user_login():
     password = userInfo["password"]
 
     userInfo = Users.login(email,password)
-
-    return jsonify({"userInfo":userInfo})
+    try:
+        userId = validate_token(userInfo["token"],True)
+        qualification = Qualification.get_user_qualification_avg(userId["userId"])
+    except ConnectionAbortedError as err:
+        raise(err)
+    else:
+        return jsonify({"userInfo":userInfo},qualification)
 
 
 @user.route('/departments', methods=['GET'])
-def getDepartment():
+def get_department():
     departments = Departament.getAllDepartments()
     return jsonify({"departments":departments})
 
 
 @user.route('/cities/<int:departmentId>', methods=['GET'])
 def user_location(departmentId=5):
-    cities = City.getAllcitiesFromDepartment(departmentId)
+    cities = City.get_all_cities_from_department(departmentId)
     return jsonify({"cities":cities})
     
 
@@ -44,7 +54,47 @@ def user_registry():
     picture = userInfo["picture"]
     city = userInfo["city"]
     color = userInfo["color"]
-    user = Users.validateRegistry(name,lastName,phoneNumber,address,email,password,birthDate,picture,city,color)
+    user = Users.validate_registry(name,lastName,phoneNumber,address,email,password,birthDate,picture,city,color)
     return jsonify({"user":user})
 
+
+@user.route('/getUser', methods=["POST"])
+def get_user():
+    token = request.headers["authorization"].split(' ')[1]
+    user = Users.search_user_info(token)
+    return jsonify({"serviceUser":user})
+
+
+@user.route('/allowChanges/<email>/<password>', methods=["POST"])
+def allow_changes(email,password):
+    token = request.headers["authorization"].split(' ')[1]
+    response = ""
+    try:
+        if (validate_token(token,True)['userId']):
+            userRes = Users.get_existant_user(email,password,1)
+            if(userRes[1].get('userId')):
+                response = True
+            else:
+                response = False 
+    except:
+        raise Exception("Invalid Token")
+    else:
+        return jsonify(response)
+
+
+@user.route('/appeal')
+def appeal_service():
+    token = request.headers["authorization"]
+    userInfo = request.json 
+    email = userInfo["email"]
+    serviceId = userInfo["serviceId"]
+    description = userInfo["description"]
+    Appeals(description,serviceId)
+    return True
     
+
+
+    
+    
+
+ 

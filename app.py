@@ -18,7 +18,7 @@ SQLAlchemy(app)
 
 # Se configura app y SQLalchemy
 
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
+cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 @app.after_request
 def after_request(response):

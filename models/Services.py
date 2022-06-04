@@ -9,7 +9,6 @@ from models.Users import Users
 from models.Appeals import Appeals
 from models.Departament import Departament
 from models.City import City
-from models.Departament import Departament
 from jwt_Functions import write_token
 
 
@@ -46,17 +45,19 @@ class Services(db.Model):
         self.usuario=usuario
 
 
-    def getIndexPageServices() -> list :
+    @classmethod
+    def get_index_page_services(self) -> list :
         services = []
-        query = db.session.query(Services).filter(Services.calificacion >= 4.0).limit(20)
+        query = db.session.query(Services).filter(self.calificacion >= 4.0).filter(self.estado == 1).limit(20)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
             services.append(
-                Services.extractServiceInfo(serviceInfo)
+                self.extract_service_info(serviceInfo)
             )
         db.session.commit()
         return services
 
+<<<<<<< HEAD
     def getServiceInfo(serviceId:int):
         service = ""
         query = db.session.query(Services).filter(Services.idservicio == serviceId)
@@ -64,12 +65,25 @@ class Services(db.Model):
         for serviceInfo in result.scalars():
             service = Services.extractServiceInfo(serviceInfo)
         return service
+=======
+    
+    @classmethod
+    def get_service_info(self,serviceId):
+        service = ""
+        query = db.session.execute(db.session.query(Services).filter(self.idservicio == serviceId))
+        for serviceInfo in query.scalars():
+            service = self.extract_service_info(serviceInfo)
+        user = Users.search_user_info(service['user'])
+        db.session.commit()
+        return {"serviceInfo":service,"serviceUser":user}
+>>>>>>> ba60fe0b2d757d1adac4cfc82c4a0506d78dc251
 
 
-    def extractServiceInfo(serviceInfo):
+    @classmethod
+    def extract_service_info(self,serviceInfo):
         service = {}
-        departmentId,cityId,cityName = City.getCityInfo(serviceInfo.idservicio,serviceInfo.usuario)
-        departmentName = Departament.getDepartmentInfo(departmentId)
+        departmentId,cityId,cityName = City.get_city_info(serviceInfo.idservicio,serviceInfo.usuario)
+        departmentName = Departament.get_department_info(departmentId)
         token = str(write_token({"userId" : serviceInfo.usuario})).split("'")[1]
         service = {
             "name": serviceInfo.nombre,
@@ -80,51 +94,73 @@ class Services(db.Model):
             "city_name": cityName,
             "department_code":departmentId,
             "department_name":departmentName,
-            "user": token
+            "user": token,
+            "description":serviceInfo.descripcion,
+            "category": serviceInfo.categorias.idcategoria
         }
         return service
 
     
-    def validateService(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario):
+    @classmethod
+    def create_service(self,idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario):
         newService = Services(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario)
         db.session.add(newService)
         db.session.commit()
 
 
-    def searchAllServicesInfo(nombreServicio: str) -> list :
+    @classmethod
+    def search_all_services_info(self,nombreServicio: str) -> list :
         services = []
-        query = db.session.query(Services).filter(Services.nombre.like('%{}%'.format(nombreServicio)))
+        query = db.session.query(Services).filter(self.nombre.like('%{}%'.format(nombreServicio))).filter(self.estado == 1)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
             services.append(
-                Services.extractServiceInfo(serviceInfo)
+                self.extract_service_info(serviceInfo)
             )
         db.session.commit()
         return services
 
 
-    def deleteService(serviceId:int):
-        db.session.execute(delete(Services).filter(Services.idservicio == serviceId))
+    @classmethod
+    def delete_service(self,serviceId:int):
+        db.session.execute(delete(Services).filter(self.idservicio == serviceId))
         db.session.commit()
         return True
                
-        
-    def updateServiceInfo(serviceId:int , categoryId:str , name:str , photo:str, type:str , price:int , description:str):
+
+    @classmethod        
+    def update_service_info(self,serviceId:int , categoryId:str , name:str , photo:str, type:str , price:int , description:str, status:int):
         db.session.execute(
-            text("UPDATE servicios SET idcategoria = :categoryId, nombre = :name, foto = :photo, tipo= :type, precio = :price, descripcion= :description WHERE idservicio = :serviceId").bindparams(
+            text("UPDATE servicios SET idcategoria = :categoryId, nombre = :name, foto = :photo, tipo= :type, precio = :price, descripcion= :description, estado = :status WHERE idservicio = :serviceId").bindparams(
                     categoryId = categoryId,
                     serviceId = serviceId,
                     name = name,
                     photo = photo,
                     type = type,
                     price = price,
-                    description = description
+                    description = description,
+                    status = status,
                 )
         )
         db.session.commit()
         return True
 
         
+    @classmethod
+    def get_services_from_user(self,userId:int):
+        try:
+            userInfo = Users.search_user_info(userId)
+            services = []
+            result = db.session.execute(db.session.query(Services).filter(self.usuario == userId))
+            for serviceInfo in result.scalars():
+                services.append(
+                    self.extract_service_info(serviceInfo)
+                )
+            db.session.commit()
+        except:
+            raise Exception("Invalid Id")
+        else:
+            return services,userInfo
 
 
     

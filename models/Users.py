@@ -1,16 +1,15 @@
 import base64
 import string
 from utils.db import db
-from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
+from sqlalchemy import Table, Column, Integer, ForeignKey, String, select, true
 from sqlalchemy.orm import relationship, backref
 from models.City import City
 from models.Rol import Rol
 from models.Statuses import Statuses
-from jwt_Functions import write_token
+from jwt_Functions import write_token, validate_token
 import os
 from config import salt
 import bcrypt
-
 
 
 class Users(db.Model):
@@ -44,14 +43,19 @@ class Users(db.Model):
         self.fnac = fnac
         self.fotop = fotop
         self.ciudad = ciudad
-        self.rol = 1
+        self.rol = 2
         self.estado = 1
         self.color = color
 
 
 
     #Function to decrypt passwords
+<<<<<<< HEAD
     def decryptPassword(password : str, dbHashedPWD: str) -> bool:
+=======
+    @staticmethod
+    def decrypt_password(password : str, dbHashedPWD: str):
+>>>>>>> ba60fe0b2d757d1adac4cfc82c4a0506d78dc251
         encodedPassword = password.encode(encoding='UTF-8')
         encodedHash = dbHashedPWD.encode(encoding='UTF-8')
         return bcrypt.checkpw(encodedPassword,encodedHash)
@@ -59,43 +63,52 @@ class Users(db.Model):
 
 
     #Funtion to encrypt passwords
-    def encryptPassword(password):
+    @staticmethod
+    def encrypt_password(password):
         encoded = bytes(password.encode(encoding='UTF-8'))
         return bcrypt.hashpw(encoded,salt)
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> ba60fe0b2d757d1adac4cfc82c4a0506d78dc251
     #Function to get the password from de db and decrypt it if it exist
-    def getDecryptedUserPassword(password : str, email : str) -> bool :
-        decryptedPassword = ""
-        queryPassword =select(Users.contrasenna).where(Users.correo == email)
+    @classmethod
+    def get_decrypted_user_password(self,password : str, email : str) :
+        decryptedPassword = False
+        queryPassword =select(self.contrasenna).where(Users.correo == email)
         passwordResult = db.session.execute(queryPassword)
         for dbpassword in passwordResult.scalars():
             if (dbpassword):
-                decryptedPassword = Users.decryptPassword(password,dbpassword)
-            else:
-                decryptedPassword = False
+                decryptedPassword = Users.decrypt_password(password,dbpassword)
         return decryptedPassword 
 
 
 
     #function to validate existance of an user in db: 
-    def getExistantUser(email,password, type):
+    @classmethod
+    def get_existant_user(self,email:str , password:str , type:int) :
         userId = {}
         user = {}
-        query = db.session.query(Users).filter(Users.correo == email)
-        result = db.session.execute(query)
+        result = db.session.execute(db.session.query(Users).filter(Users.correo == email))
         if(result.scalars() and type == 1):
-            if(Users.getDecryptedUserPassword(password,email)):
-                user, userId = Users.getUserInfo(result.scalars())
+            if(self.get_decrypted_user_password(password,email)):
+                user, userId = self.get_user_info(result.scalars())
         elif(result.scalars() and type == 0):
-            user, userId = Users.getUserInfo(result.scalars())
+            user, userId = self.get_user_info(result.scalars())
         db.session.commit()
         return user, userId
+        
 
+<<<<<<< HEAD
 
 
     def getUserInfo(result):
+=======
+    @classmethod
+    def get_user_info(self,result):
+>>>>>>> ba60fe0b2d757d1adac4cfc82c4a0506d78dc251
         userId = {}
         user = {}
         for userInfo in result:
@@ -105,10 +118,12 @@ class Users(db.Model):
                 "email" : userInfo.correo,
                 "status" : userInfo.estado,
                 "userPicture" : userInfo.fotop,
-                "color": userInfo.color
+                "phoneNumber": userInfo.celular,
+                "birthDate": userInfo.fnac,
+                "color": userInfo.color,
             },
             userId = {
-                "id" : userInfo.idusuario,
+                "userId" : userInfo.idusuario,
                 "rol" : userInfo.rol
             }
         return user,userId
@@ -116,22 +131,32 @@ class Users(db.Model):
 
 
     #Function to decide if the user must be registered
+<<<<<<< HEAD
     def validateRegistry(nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad):
         user, userId = Users.getExistantUser(correo,contrasenna,0)
         if(bool(user) == False):
             encryptedPassword = Users.encryptPassword(contrasenna)
             newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad)
+=======
+    @classmethod
+    def validate_registry(self,nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad,color):
+        user,userId = self.get_existant_user(correo,contrasenna,0)
+        if(user):
+            return {"exist": "User already exist"}
+        else:
+            encryptedPassword = Users.encrypt_password(contrasenna)
+            newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad,color)
+>>>>>>> ba60fe0b2d757d1adac4cfc82c4a0506d78dc251
             db.session.add(newUser)
             db.session.commit()
             return {"exist": "new User created"}
-        else:
-            return {"exist": "User already exist"}
 
 
 
     #Function to look for a user in DB and take his info:
-    def login(email,password):
-        user, userId = Users.getExistantUser(email,password,1)
+    @classmethod
+    def login(self,email:str , password:str):
+        user, userId = self.get_existant_user(email,password,1)
         if (user):
             token = str(write_token(userId)).split("'")[1]
             return {"token":token, "info":user, "exist": True}
@@ -141,20 +166,29 @@ class Users(db.Model):
 
 
     #Function to search all users in the app
-    def searchAllUsersInfo():
-        users = []
-        query = select(Users)
-        result = db.session.execute(query)
-        for usersInfo in result.scalars():
-            users.append(
-                {
+    @classmethod
+    def search_user_info(self,userId):
+        user = {}
+        try:           
+            if (type(userId) != int):
+                decryptedUserId = validate_token(userId,True)
+                result = db.session.execute(select(Users).filter(self.idusuario == decryptedUserId.get('userId')))
+            else:
+                result = db.session.execute(select(Users).filter(self.idusuario == userId))
+        except UnicodeDecodeError as err:
+            raise(err)
+        except ConnectionAbortedError as err:
+            raise(err)
+        else:
+            for usersInfo in result.scalars():
+                user = {
                     "name" : usersInfo.nombres,
                     "lastName" : usersInfo.apellidos,
-                    "email" : usersInfo.correo,
-                    "contrasenna" : usersInfo.contrasenna
+                    "photo": usersInfo.fotop,
+                    "phoneNumber": usersInfo.celular,
+                    "email": usersInfo.correo,
+                    "color": usersInfo.color,
                 }
-            )
+            db.session.commit()
+            return user
 
-        db.session.commit()
-
-        return users
