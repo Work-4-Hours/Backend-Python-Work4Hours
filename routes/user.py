@@ -6,7 +6,7 @@ from models.Departament import Departament
 from models.City import City
 from models.Appeals import Appeals
 from utils.db import db
-from jwt_Functions import validate_token
+from jwt_Functions import validate_token, write_token
 from email_service import email_client
 
 
@@ -20,11 +20,12 @@ def user_login():
     password = userInfo["password"]
 
     userInfo = Users.login(email,password)
+    print(userInfo)
     try:
         userId = validate_token(userInfo["token"],True)
         qualification = Qualification.get_user_qualification_avg(userId["userId"])
-    except ConnectionAbortedError as err:
-        raise(err)
+    except:
+        return jsonify({"userInfo":userInfo})
     else:
         return jsonify({"userInfo":userInfo},qualification)
 
@@ -94,7 +95,21 @@ def appeal_service():
     
 
 
-    
-    
+@user.route('/recoverPassword/<email>')
+def recover_password(email):
+    userInfo = {}
+    db_user = db.session.execute(db.session.query(Users).filter(Users.correo == email))
+    for user in db_user.scalars():
+        userInfo={
+            "userId":user.idusuario,
+            "rol":user.rol
+        }
+    token = write_token(userInfo)
+    email_client.send_email(email,"Access link to recover password",message=f'http://localhost:3000/password/forgotten?id={token}',
+    format = 
+    """
+    <h1>Work4Hours</h1>
+    <p>Recovery password request<p>
+    """)
+    return "Se envió el email"
 
- 

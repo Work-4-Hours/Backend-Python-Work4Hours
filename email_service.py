@@ -7,7 +7,7 @@ from os import getenv
 class EmailService:
 
     def __init__(self) -> None:
-        self.client = SMTP()
+        self.client = SMTP(getenv('SMTP_HOST'))
 
 
     def _create_connection(self):
