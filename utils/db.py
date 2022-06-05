@@ -7,7 +7,7 @@ from config import settings
 db = SQLAlchemy()
 metadata = MetaData()
 engine = create_engine(url=settings.DB_URI, echo=True, encoding="utf-8")
-session = sessionmaker(
+sync_session = sessionmaker(
     bind=engine,
     class_=Session
 )
@@ -21,7 +21,8 @@ class Base:
     pass
 
 def get_session():
-    try:
-        yield session
-    except:
-        pass
+    with sync_session() as session:
+        try:    
+            return session
+        except:
+            pass

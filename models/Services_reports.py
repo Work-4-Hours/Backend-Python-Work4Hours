@@ -7,14 +7,14 @@ from models.Services import Services
 
 
 class Services_reports(db.Model):
-    __tablename__ = 'servicio_reportes'
+    __tablename__ = 'report_services'
     id = db.Column(db.Integer, primary_key=True)
-    idreporte = db.Column(db.Integer,ForeignKey('reportes.idreporte'), nullable=False)
-    reportes = relationship(Report, backref=backref('servicio_reportes'), uselist=True)
-    idservicio = db.Column(db.Integer, ForeignKey('servicios.idservicio'),nullable=False)
-    servicios = relationship(Services, backref=backref('servicio_reportes'), uselist=True)
+    reportid = db.Column(db.Integer,ForeignKey('report.reportid'), nullable=False)
+    reports = relationship(Report, backref=backref('report_services'), uselist=True)
+    serviceid = db.Column(db.Integer, ForeignKey('services.serviceId'),nullable=False)
+    services = relationship(Services, backref=backref('reports_services'), uselist=True)
 
 
-    def __init__(self, idreporte, idservicio):
-        self.idreporte= idreporte
-        self.idservicio= idservicio
+    def __init__(self, reportId, serviceId):
+        self.reportid= reportId
+        self.serviceid= serviceId

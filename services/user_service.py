@@ -19,26 +19,26 @@ class UserService:
     @classmethod
     def login(cls, user: UserLogin) -> dict:
         with get_session() as session:
-            db_data = session.execute(session.query(Users).filter(Users.correo == user.correo))
+            loged_user : UserModel()
+            db_data = session.execute(session.query(Users).filter(Users.email == user.email))
             for db_user in db_data.scalars():
-                loged_user = UserModel(db_user,exist=True)
+                loged_user = UserModel(**db_user.__dict__)
             session.commit()
-            if(cls.decrypt_password(user.contrasenna,loged_user.contrasenna)):
+            if(cls.decrypt_password(user.password,loged_user.password)):
                 return loged_user
             else:
                 return None
 
-
     @classmethod
     def signup(cls, user: UserSignup) -> dict:
-        with get_session as session:
-            db_data = session.execute(session.query(Users).filter(Users.correo == user.correo))    
+        with get_session() as session:
+            db_data = session.execute(session.query(Users).filter(Users.email == user.email))    
             if(db_data.scalars()):
-                return {"exist":"User already exist"}
+                return None
             else:
-                newUser = Users(**user)
+                newUser = Users(**user.__exclude_fields__("exist"))
                 session.add(newUser)
                 session.commit()
-                return {"exist":"New user created"}
+                return True
 
 

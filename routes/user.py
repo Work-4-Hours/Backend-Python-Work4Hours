@@ -23,18 +23,18 @@ def user_login():
     if not user:
         return {"exist":False}
     return user.dict()
-    """userInfo = request.json
-    email = userInfo["email"]
-    password = userInfo["password"]
+    # userInfo = request.json
+    # email = userInfo["email"]
+    # password = userInfo["password"]
 
-    userInfo = Users.login(email,password)
-    try:
-        userId = validate_token(userInfo["token"],True)
-        qualification = Qualification.get_user_qualification_avg(userId["userId"])
-    except ConnectionAbortedError as err:
-        raise(err)
-    else:
-        return jsonify({"userInfo":userInfo},qualification)"""
+    # userInfo = Users.login(email,password)
+    # try:
+    #     userId = validate_token(userInfo["token"],True)
+    #     qualification = Qualification.get_user_qualification_avg(userId["userId"])
+    # except ConnectionAbortedError as err:
+    #     raise(err)
+    # else:
+    #     return jsonify({"userInfo":userInfo},qualification)
 
 
 @user.route('/departments', methods=['GET'])
@@ -51,20 +51,24 @@ def user_location(departmentId=5):
 
 @user.route('/registry', methods=['POST'])
 def user_registry():
-    userInfo = request.json
-    name = userInfo["name"]
-    lastName = userInfo["lastName"]
-    phoneNumber = userInfo["phoneNumber"]
-    address = userInfo["address"]
-    email = userInfo["email"]
-    password = userInfo["password"]
-    birthDate = userInfo["birthDate"]
-    picture = userInfo["picture"]
-    city = userInfo["city"]
-    color = userInfo["color"]
-    user = Users.validate_registry(name,lastName,phoneNumber,address,email,password,birthDate,picture,city,color)
-    return jsonify({"user":user})
-
+    user_to_signup = UserSignup(**request.json)
+    registry_response = UserService.signup(user_to_signup)
+    if not registry_response:
+        return {"exist":"User already exist"}
+    return {"exist":"New user created"}
+    # userInfo = request.json
+    # name = userInfo["name"]
+    # lastName = userInfo["lastName"]
+    # phoneNumber = userInfo["phoneNumber"]
+    # address = userInfo["address"]
+    # email = userInfo["email"]
+    # password = userInfo["password"]
+    # birthDate = userInfo["birthDate"]
+    # picture = userInfo["picture"]
+    # city = userInfo["city"]
+    # color = userInfo["color"]
+    # user = Users.validate_registry(name,lastName,phoneNumber,address,email,password,birthDate,picture,city,color)
+    # return jsonify({"user":user})
 
 @user.route('/getUser', methods=["POST"])
 def get_user():

@@ -4,9 +4,9 @@ from sqlalchemy.orm import relationship, backref
 
 
 class Categories(db.Model):
-    __tablename__='categorias'
-    idcategoria = db.Column(db.String, primary_key=True)
-    nombrecateg = db.Column(db.String(30), nullable=True)
+    __tablename__='category'
+    categoryid = db.Column(db.String, primary_key=True)
+    namecateg = db.Column(db.String(30), nullable=True)
 
-    def __init__(self,nombrecateg):
-        self.nombrecateg=nombrecateg
+    def __init__(self,nameCateg):
+        self.namecateg=nameCateg

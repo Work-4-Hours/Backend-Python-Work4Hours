@@ -4,9 +4,9 @@ from sqlalchemy.orm import relationship, backref
 
 
 class Report(db.Model):
-    __tablename__ = 'reportes'
-    idreporte = db.Column(db.Integer, primary_key=True)
-    nombrereporte = db.Column(db.String(14), nullable=False)
+    __tablename__ = 'report'
+    reportid = db.Column(db.Integer, primary_key=True)
+    reportName = db.Column(db.String(14), nullable=False)
 
-    def __init__(self,nombrereporte):
-        self.nombrereporte=nombrereporte
+    def __init__(self,reportName):
+        self.reportName=reportName

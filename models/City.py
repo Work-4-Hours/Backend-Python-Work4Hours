@@ -5,16 +5,16 @@ from sqlalchemy.orm import relationship, backref
 from models.Departament import Departament
 
 class City(db.Model):
-    __tablename__ = 'ciudades'
-    idciudad = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(50), nullable= False)
-    iddepartamento = db.Column(db.Integer, ForeignKey('departamentos.iddepartamento'),nullable=False)
-    departamentos = relationship(Departament, backref=backref('departamentos', uselist=True))
+    __tablename__ = 'city'
+    cityid = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable= False)
+    departamentid = db.Column(db.Integer, ForeignKey('departament.departamentid'),nullable=False)
+    departaments = relationship(Departament, backref=backref('departaments', uselist=True))
 
 
-    def __init__(self,nombre,iddepartamento):
-        self.nombre=nombre
-        self.iddepartamento=iddepartamento
+    def __init__(self,name,departamentid):
+        self.name= name
+        self.departamentid=departamentid
 
 
     def get_city_info(serviceId:Integer,userId:Integer):

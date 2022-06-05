@@ -3,22 +3,22 @@ import bcrypt
 from dotenv import load_dotenv
 from pydantic import BaseSettings
 
-load_dotenv()
+# load_dotenv()
 
-user = os.environ['DB_USER']
-password = os.environ['DB_PASSWORD']
-host = os.environ['DB_HOST']
-database = os.environ['DB_DATABASE']
+# user = os.environ['DB_USER']
+# password = os.environ['DB_PASSWORD']
+# host = os.environ['DB_HOST']
+# database = os.environ['DB_DATABASE']
 
-DATABASE_CONNECTION_URI = f'mysql://{user}:{password}@{host}/{database}'
+# DATABASE_CONNECTION_URI = f'mysql://{user}:{password}@{host}/{database}'
 
-salt = bcrypt.gensalt(rounds=16)
+# salt = bcrypt.gensalt(rounds=16)
 
 class Settings(BaseSettings):
-    DB_USER: str
-    DB_PASSWORD: str
-    DB_HOST: str
-    DB_DATABASE: str
+    # DB_USER: str
+    # DB_PASSWORD: str
+    # DB_HOST: str
+    # DB_DATABASE: str
     DB_URI: str
 
     # SMTP CREDENTIALS
