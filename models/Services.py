@@ -45,29 +45,29 @@ class Services(db.Model):
 
 
     @classmethod
-    def get_index_page_services(self) -> list :
+    def get_index_page_services(cls) -> list :
         services = []
-        query = db.session.query(Services).filter(self.calificacion >= 4.0).filter(self.estado == 1).limit(20)
+        query = db.session.query(Services).filter(cls.calificacion > 3.9).filter(cls.estado == 1).limit(20)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
             services.append(
-                self.extract_service_info(serviceInfo)
+                cls.extract_service_info(serviceInfo)
             )
         db.session.commit()
         return services
     
     @classmethod
-    def get_service_info(self,serviceId):
+    def get_service_info(cls,serviceId):
         service = ""
-        query = db.session.execute(db.session.query(Services).filter(self.idservicio == serviceId))
+        query = db.session.execute(db.session.query(Services).filter(cls.idservicio == serviceId))
         for serviceInfo in query.scalars():
-            service = self.extract_service_info(serviceInfo)
+            service = cls.extract_service_info(serviceInfo)
         user = Users.search_user_info(service['user'])
         db.session.commit()
         return {"serviceInfo":service,"serviceUser":user}
 
     @classmethod
-    def extract_service_info(self,serviceInfo):
+    def extract_service_info(cls,serviceInfo):
         service = {}
         departmentId,cityId,cityName = City.get_city_info(serviceInfo.idservicio,serviceInfo.usuario)
         departmentName = Departament.get_department_info(departmentId)
@@ -89,34 +89,34 @@ class Services(db.Model):
 
     
     @classmethod
-    def create_service(self,idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario):
+    def create_service(cls,idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario):
         newService = Services(idcategoria,nombre,estado,tipo,precio,descripcion,foto,usuario)
         db.session.add(newService)
         db.session.commit()
 
 
     @classmethod
-    def search_all_services_info(self,nombreServicio: str) -> list :
+    def search_all_services_info(cls,nombreServicio: str) -> list :
         services = []
-        query = db.session.query(Services).filter(self.nombre.like('%{}%'.format(nombreServicio))).filter(self.estado == 1)
+        query = db.session.query(Services).filter(cls.nombre.like('%{}%'.format(nombreServicio))).filter(cls.estado == 1)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
             services.append(
-                self.extract_service_info(serviceInfo)
+                cls.extract_service_info(serviceInfo)
             )
         db.session.commit()
         return services
 
 
     @classmethod
-    def delete_service(self,serviceId:int):
-        db.session.execute(delete(Services).filter(self.idservicio == serviceId))
+    def delete_service(cls,serviceId:int):
+        db.session.execute(delete(Services).filter(cls.idservicio == serviceId))
         db.session.commit()
         return True
 
 
     @classmethod        
-    def update_service_info(self,serviceId:int , categoryId:str , name:str , photo:str, type:str , price:int , description:str, status:int):
+    def update_service_info(cls,serviceId:int , categoryId:str , name:str , photo:str, type:str , price:int , description:str, status:int):
         db.session.execute(
             text("UPDATE servicios SET idcategoria = :categoryId, nombre = :name, foto = :photo, tipo= :type, precio = :price, descripcion= :description, estado = :status WHERE idservicio = :serviceId").bindparams(
                     categoryId = categoryId,
@@ -134,14 +134,14 @@ class Services(db.Model):
 
         
     @classmethod
-    def get_services_from_user(self,userId:int):
+    def get_services_from_user(cls,userId:int):
         try:
             userInfo = Users.search_user_info(userId)
             services = []
-            result = db.session.execute(db.session.query(Services).filter(self.usuario == userId))
+            result = db.session.execute(db.session.query(Services).filter(cls.usuario == userId))
             for serviceInfo in result.scalars():
                 services.append(
-                    self.extract_service_info(serviceInfo)
+                    cls.extract_service_info(serviceInfo)
                 )
             db.session.commit()
         except:

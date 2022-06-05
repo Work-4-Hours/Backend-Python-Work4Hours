@@ -13,4 +13,4 @@ DATABASE_CONNECTION_URI = f'mysql://{user}:{password}@{host}/{database}'
 
 
 
-salt = bcrypt.gensalt(rounds=16)
+salt = bcrypt.gensalt(rounds=10)
