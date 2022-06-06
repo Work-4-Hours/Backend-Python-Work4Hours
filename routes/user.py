@@ -32,7 +32,7 @@ def user_login():
 
 @user.route('/departments', methods=['GET'])
 def get_department():
-    departments = Departament.getAllDepartments()
+    departments = Departament.get_all_departments()
     return jsonify({"departments":departments})
 
 
