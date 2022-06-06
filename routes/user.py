@@ -6,6 +6,7 @@ from models.Departament import Departament
 from models.City import City
 from models.Appeals import Appeals
 from utils.db import db
+from sqlalchemy.sql import text
 from jwt_Functions import validate_token, write_token
 from email_service import email_client
 
@@ -112,4 +113,21 @@ def recover_password(email):
     <p>Recovery password request<p>
     """)
     return "Se envió el email"
+
+
+@user.route('/changePassword/<newPassword>')
+def change_password(newPassword):
+    token = request.headers["authorization"].split(' ')[1]
+    try:
+        userInfo = validate_token(token,True)
+        db.session.execute(text('UPDATE servicios SET contrasenna = :newPassword WHERE idservicio = :id').bindparams(
+            newPassword = newPassword,
+            id = userInfo['userId']
+        ))
+        db.session.commit()
+    except:
+        return "Invalid token"
+    else:
+        return True
+
 
