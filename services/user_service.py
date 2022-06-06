@@ -36,7 +36,7 @@ class UserService:
             if(db_data.scalars()):
                 return None
             else:
-                newUser = Users(**user.__exclude_fields__("exist"))
+                newUser = Users(**user)
                 session.add(newUser)
                 session.commit()
                 return True
