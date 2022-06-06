@@ -19,10 +19,11 @@ class UserService:
     @classmethod
     def login(cls, user: UserLogin) -> dict:
         with get_session() as session:
-            loged_user : UserModel()
-            db_data = session.execute(session.query(Users).filter(Users.email == user.email))
-            for db_user in db_data.scalars():
-                loged_user = UserModel(**db_user.__dict__)
+            # loged_user : UserModel()
+            db_data = session.execute(session.query(Users).filter(Users.email == user.email).first())
+            # for db_user in db_data.scalars():
+            print(db_data)
+            loged_user = UserModel(**db_data.__dict__)
             session.commit()
             if(cls.decrypt_password(user.password,loged_user.password)):
                 return loged_user
@@ -33,12 +34,13 @@ class UserService:
     def signup(cls, user: UserSignup) -> dict:
         with get_session() as session:
             db_data = session.execute(session.query(Users).filter(Users.email == user.email))    
-            if(db_data.scalars()):
+            db_user = db_data.scalars().first()
+            print(db_user)
+            if(not db_user):
                 return None
-            else:
-                newUser = Users(**user.__exclude_fields__("exist"))
-                session.add(newUser)
-                session.commit()
-                return True
+            newUser = Users(**user)
+            session.add(newUser)
+            session.commit()
+            return True
 
 
