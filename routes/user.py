@@ -131,3 +131,8 @@ def change_password(newPassword):
         return True
 
 
+@user.route('/changeUserInfo', methods=["POST"])
+def changeUserInfo():
+    userInfo = request.json
+    return "hola"
+
