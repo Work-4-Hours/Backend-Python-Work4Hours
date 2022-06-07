@@ -1,7 +1,6 @@
 from distutils.log import info
 from re import search
 from flask import Blueprint, json, jsonify, request, session, render_template
-from httplib2 import Response
 from models.Services import Services
 from models.Report import Report
 from models.Services_reports import Services_reports
@@ -94,6 +93,8 @@ def get_service_info(serviceId):
     reports = Services_reports.get_service_reports(serviceId)
     serviceInfo["reports"] = reports
     serviceQualification = Qualification.get_qualifications_average(serviceId)
+    if(not serviceInfo):
+        return jsonify({"info":"Invalid service id"})
     return jsonify(serviceInfo,serviceQualification)
 
 
@@ -105,16 +106,16 @@ def get_user_services(userId):
             services,userInfo = Services.get_services_from_user(userId)
             qualification = Qualification.get_user_qualification_avg(userId)
     except:
-        raise Exception("Invalid Token")
+        return jsonify({"info":"Invalid Token"})
     else:
+        if(not services):
+            return jsonify({"info":"Invalid Id"})
         return jsonify(services,userInfo,qualification)
 
 
 @services.route('/report/<int:serviceId>/<userToReport>/<int:reportId>')
 def report(serviceId,userToReport,reportId):
     token = request.headers["authorization"].split(' ')[1]
-    print(validate_token(token,True))
-    print(validate_token(userToReport,True))
     try:
         userInfo = validate_token(token,True)
         userToReportInfo = validate_token(userToReport,True)

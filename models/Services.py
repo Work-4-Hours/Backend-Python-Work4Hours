@@ -66,6 +66,8 @@ class Services(db.Model):
             service = cls.extract_service_info(serviceInfo)
         user = Users.search_user_info(service['user'])
         db.session.commit()
+        if(type(user) != dict):
+            return None
         return {"serviceInfo":service,"serviceUser":user}
 
 
@@ -86,7 +88,8 @@ class Services(db.Model):
             "department_name":departmentName,
             "user": token,
             "description":serviceInfo.descripcion,
-            "category": serviceInfo.categorias.idcategoria
+            "category": serviceInfo.categorias.idcategoria,
+            "status": serviceInfo.estado
         }
         return service
 
@@ -159,10 +162,10 @@ class Services(db.Model):
                 )
             db.session.commit()
         except:
-            raise Exception("Invalid Id")
+            return None,None
         else:
+            if(type(userInfo) != dict):
+                return None,None
             return services,userInfo
 
 
-    
-        

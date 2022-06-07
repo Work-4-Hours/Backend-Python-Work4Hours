@@ -148,9 +148,9 @@ class Users(db.Model):
             else:
                 result = db.session.execute(select(Users).filter(self.idusuario == userId))
         except UnicodeDecodeError as err:
-            raise(err)
+            return(err)
         except ConnectionAbortedError as err:
-            raise(err)
+            return(err)
         else:
             for usersInfo in result.scalars():
                 user = {
