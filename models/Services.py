@@ -2,6 +2,7 @@ from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, update, delete
 from sqlalchemy.sql import text
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.sql.expression import func
 from models.Categories import Categories
 from models.Statuses import Statuses
 from models.Users import Users
@@ -30,7 +31,7 @@ class Services(db.Model):
     apelacion = db.Column(db.Integer,ForeignKey('apelaciones.idapelacion'),nullable=True)
     apelaciones = relationship(Appeals, backref= backref('servicios'),uselist= True)
     calificacion = db.Column(db.Float(), nullable=False)
-         
+
 
 
     def __init__(self, idcategoria, nombre, estado, tipo, precio, descripcion, foto, usuario):
@@ -112,8 +113,19 @@ class Services(db.Model):
 
     @classmethod
     def delete_service(cls,serviceId:int):
-        db.session.execute(delete(Services).filter(cls.idservicio == serviceId))
-        db.session.commit()
+        db_hall = db.session.execute(text("SELECT * FROM sala WHERE servicio = :serviceId").bindparams(
+            serviceId = serviceId
+        ))
+        total_halls = db_hall.scalars()
+        print(total_halls)
+        if(not total_halls):
+            db.session.execute(delete(Services).filter(cls.idservicio == serviceId))
+            db.session.commit()
+        else:
+            db.session.execute(text("DELETE sa.*, s.* FROM servicios s INNER JOIN sala sa ON s.idservicio = sa.servicio WHERE sa.servicio = :serviceId").bindparams(
+                serviceId = serviceId
+            ))
+            db.session.commit()
         return True
 
 

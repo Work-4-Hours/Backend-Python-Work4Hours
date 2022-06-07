@@ -120,7 +120,7 @@ def change_password(newPassword):
     token = request.headers["authorization"].split(' ')[1]
     try:
         userInfo = validate_token(token,True)
-        db.session.execute(text('UPDATE servicios SET contrasenna = :newPassword WHERE idservicio = :id').bindparams(
+        db.session.execute(text('UPDATE usuarios SET contrasenna = :newPassword WHERE idusuario = :id').bindparams(
             newPassword = newPassword,
             id = userInfo['userId']
         ))
@@ -131,8 +131,16 @@ def change_password(newPassword):
         return True
 
 
-@user.route('/changeUserInfo', methods=["POST"])
+@user.route('/updateUser', methods=["POST"])
 def changeUserInfo():
+    token = request.headers["authorization"].split(' ')[1]
     userInfo = request.json
-    return "hola"
+    try:
+        decryptedToken = validate_token(token,True)
+        if(decryptedToken["userId"]):
+            Users.update_user_info(decryptedToken["userId"],**userInfo)
+    except:
+        return {"info":'Invalid token'}
+    else:
+        return {"info":"User updated"} 
 

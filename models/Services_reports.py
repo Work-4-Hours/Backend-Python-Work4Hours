@@ -1,6 +1,7 @@
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.sql.functions import func
 from models.Report import Report
 from models.Services import Services
 
@@ -18,3 +19,9 @@ class Services_reports(db.Model):
     def __init__(self, idreporte, idservicio):
         self.idreporte= idreporte
         self.idservicio= idservicio
+
+    @classmethod
+    def get_service_reports(cls, serviceId: int) -> int:
+        db_reports = db.session.execute(db.session.query(func.count(cls.id)).filter(cls.idservicio == serviceId))
+        reports = db_reports.scalars().one()
+        return reports
