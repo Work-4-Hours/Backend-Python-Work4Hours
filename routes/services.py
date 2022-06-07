@@ -90,8 +90,6 @@ def update_service():
 @services.route('/serviceInfo/<int:serviceId>',methods=["POST"])
 def get_service_info(serviceId):
     serviceInfo = Services.get_service_info(serviceId)
-    reports = Services_reports.get_service_reports(serviceId)
-    serviceInfo["reports"] = reports
     serviceQualification = Qualification.get_qualifications_average(serviceId)
     if(not serviceInfo):
         return jsonify({"info":"Invalid service id"})

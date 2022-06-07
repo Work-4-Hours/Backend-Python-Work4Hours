@@ -76,6 +76,10 @@ class Services(db.Model):
         service = {}
         departmentId,cityId,cityName = City.get_city_info(serviceInfo.idservicio,serviceInfo.usuario)
         departmentName = Departament.get_department_info(departmentId)
+        db_reports = db.session.execute(text("SELECT COUNT(id) FROM servicio_reportes WHERE idservicio = :serviceId").bindparams(
+            serviceId = serviceInfo.idservicio
+        ))
+        reports = db_reports.scalars().one()
         token = str(write_token({"userId" : serviceInfo.usuario})).split("'")[1]
         service = {
             "name": serviceInfo.nombre,
@@ -89,7 +93,8 @@ class Services(db.Model):
             "user": token,
             "description":serviceInfo.descripcion,
             "category": serviceInfo.categorias.idcategoria,
-            "status": serviceInfo.estado
+            "status": serviceInfo.estado,
+            "reports": reports
         }
         return service
 
