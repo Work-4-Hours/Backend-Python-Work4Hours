@@ -1,3 +1,4 @@
+from datetime import date
 from pydantic import Field
 from .base_schema import BaseModel
 
@@ -11,15 +12,14 @@ class UserSignup(UserLogin):
     lastName: str = Field(...)
     phoneNumber: int = Field(...)
     address: str = Field(...)
-    birthDate: str = Field(...)
+    birthDate: date = Field(...)
     picture: str = Field(...)
     city: int = Field(...)
     color: str = Field(...)
 
 
 class UserModel(UserSignup):
-    userId: int = Field(...)
     role: int = Field(...)
     status: int = Field(...)
+    userId: int = Field(...)
     exist: bool = Field()
-    

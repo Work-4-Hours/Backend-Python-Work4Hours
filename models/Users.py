@@ -12,14 +12,14 @@ import bcrypt
 
 class Users(db.Model):
     __tablename__ = 'user'
-    userid = db.Column(db.Integer, primary_key=True)
+    userId = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60), nullable= False)
-    lastname = db.Column(db.String(60), nullable= False)
-    phone = db.Column(db.String(30), nullable= False)
+    lastName = db.Column(db.String(60), nullable= False)
+    phoneNumber = db.Column(db.String(30), nullable= False)
     address = db.Column(db.String(500), nullable= True)
     email = db.Column(db.String(500), nullable = False)
     password = db.Column(db.String(150), nullable= False)
-    birthdate = db.Column(db.Date, nullable= False)
+    birthDate = db.Column(db.Date, nullable= False)
     picture = db.Column(db.String(500), nullable= True)
     color = db.Column(db.String(8), nullable= True)
     city = db.Column(db.Integer, ForeignKey('city.cityid'),nullable = False)
@@ -32,16 +32,16 @@ class Users(db.Model):
 
     def __init__(self,name,lastName,phoneNumber,address,email,password,birthDate,picture,city,color):
         self.name= name
-        self.lastname = lastName
-        self.phone = phoneNumber
+        self.lastName = lastName
+        self.phoneNumber = phoneNumber
         self.address = address
         self.email = email
         self.password = password
-        self.birthdate = birthDate
+        self.birthDate = birthDate
         self.picture = picture
         self.city = city
         self.role = 2
-        self.estatus = 1
+        self.status = 1
         self.color = color
 
 
