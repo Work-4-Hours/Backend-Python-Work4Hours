@@ -1,5 +1,8 @@
+from datetime import date
 from pydantic import Field
 from .base_schema import BaseModel
+from .service_schema import ServiceModel
+
 
 class UserLogin(BaseModel):
     email: str = Field(...)
@@ -11,15 +14,17 @@ class UserSignup(UserLogin):
     lastName: str = Field(...)
     phoneNumber: int = Field(...)
     address: str = Field(...)
-    birthDate: str = Field(...)
+    birthDate: date = Field(...)
     picture: str = Field(...)
     city: int = Field(...)
     color: str = Field(...)
 
 
 class UserModel(UserSignup):
-    userId: int = Field(...)
     role: int = Field(...)
     status: int = Field(...)
-    exist: bool = Field()
-    
+    userId: int = Field(...)
+    exist: bool = Field(None)
+    services: ServiceModel = Field(None)
+
+

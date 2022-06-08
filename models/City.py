@@ -17,7 +17,7 @@ class City(db.Model):
         self.departamentid=departamentid
 
 
-    def get_city_info(serviceId:Integer,userId:Integer):
+    def get_city_info(serviceId: int, userId: int):
         departmentId = ""
         cityId = ""
         cityName = ""

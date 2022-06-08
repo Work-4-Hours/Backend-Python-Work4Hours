@@ -1,4 +1,4 @@
-from flask import Blueprint, json, jsonify, request
+from flask import Blueprint, jsonify, request
 from models.Qualification import Qualification
 from models.Services import Services
 from models.Users import Users
@@ -8,7 +8,7 @@ from models.Appeals import Appeals
 from services.user_service import UserService
 from schemas import UserLogin, UserSignup
 from utils.db import db
-from jwt_Functions import validate_token
+from jwt_Functions import validate_token, write_token
 from email_service import email_client
 
 
@@ -22,19 +22,11 @@ def user_login():
     user = UserService.login(user_to_login)
     if not user:
         return {"exist":False}
-    return user.dict()
-    # userInfo = request.json
-    # email = userInfo["email"]
-    # password = userInfo["password"]
-
-    # userInfo = Users.login(email,password)
-    # try:
-    #     userId = validate_token(userInfo["token"],True)
-    #     qualification = Qualification.get_user_qualification_avg(userId["userId"])
-    # except ConnectionAbortedError as err:
-    #     raise(err)
-    # else:
-    #     return jsonify({"userInfo":userInfo},qualification)
+    token = str(write_token({"userId":user.userId,"rol":user.role})).split("'")[1]
+    return {
+        "info": user.dict(exclude= {"userId","role"}), 
+        "token":token
+        }
 
 
 @user.route('/departments', methods=['GET'])

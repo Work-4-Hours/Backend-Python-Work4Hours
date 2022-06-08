@@ -11,34 +11,42 @@ class UserService:
 
     @classmethod
     def encrypt_password(cls, plain: str) -> str:
-        return cls.__password_context__.encrypt(plain)
+        return cls.__password_context__.hash(plain)
 
+
+    @classmethod
     def decrypt_password(cls, plain: str, hashedPassword: str) -> bool:
         return cls.__password_context__.verify(plain,hashedPassword)
 
+
     @classmethod
-    def login(cls, user: UserLogin) -> dict:
+    def login(cls, user: UserLogin) -> UserModel or None:
         with get_session() as session:
-            loged_user : UserModel()
             db_data = session.execute(session.query(Users).filter(Users.email == user.email))
-            for db_user in db_data.scalars():
-                loged_user = UserModel(**db_user.__dict__)
+            user_data = db_data.scalars().one()
+            loged_user = UserModel(**user_data.__dict__,exist= True)
             session.commit()
             if(cls.decrypt_password(user.password,loged_user.password)):
                 return loged_user
             else:
                 return None
 
+
     @classmethod
-    def signup(cls, user: UserSignup) -> dict:
+    def signup(cls, user: UserSignup) -> bool or None:
         with get_session() as session:
             db_data = session.execute(session.query(Users).filter(Users.email == user.email))    
-            if(db_data.scalars()):
+            db_user = db_data.scalars().first()
+            if(db_user):
                 return None
-            else:
-                newUser = Users(**user)
-                session.add(newUser)
-                session.commit()
-                return True
+            hashed_password = cls.encrypt_password(user.password)
+            user.password = hashed_password
+            newUser = Users(
+                **user.dict()
+            )
+            print(newUser)
+            session.add(newUser)
+            session.commit()
+            return True
 
 

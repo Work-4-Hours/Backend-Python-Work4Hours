@@ -25,7 +25,7 @@ class Services(db.Model):
     price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(2000), nullable=False)
     picture = db.Column(db.String(500), nullable=False)
-    user = db.Column(db.Integer, ForeignKey('user.userid'),nullable=False)
+    user = db.Column(db.Integer, ForeignKey('user.userId'),nullable=False)
     users = relationship(Users, backref=backref('service', uselist=True))
     appeal = db.Column(db.Integer,ForeignKey('appeal.appealid'),nullable=True)
     appeals = relationship(Appeals, backref= backref('service'),uselist= True)
