@@ -151,11 +151,14 @@ class Services(db.Model):
 
         
     @classmethod
-    def get_services_from_user(cls,userId:int):
+    def get_services_from_user(cls, userId: int, isOwn: bool):
         try:
             userInfo = Users.search_user_info(userId)
             services = []
-            result = db.session.execute(db.session.query(Services).filter(cls.usuario == userId))
+            if(isOwn):
+                result = db.session.execute(db.session.query(Services).filter(cls.usuario == userId))
+            else:
+                result = db.session.execute(db.session.query(Services).filter(cls.usuario == userId).filter(cls.estado == 1))
             for serviceInfo in result.scalars():
                 services.append(
                     cls.extract_service_info(serviceInfo)

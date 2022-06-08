@@ -98,12 +98,13 @@ def get_service_info(serviceId):
     return jsonify(serviceInfo,serviceQualification)
 
 
-@services.route('/getUserServices/<int:userId>')
-def get_user_services(userId):
+@services.route('/getOwnServices/<int:userId>')
+def get_Own_services(userId):
     token = request.headers["authorization"].split(' ')[1]
     try:
-        if (validate_token(token,True)['userId']):
-            services,userInfo = Services.get_services_from_user(userId)
+        userInfo = validate_token(token,True)
+        if (userInfo["userId"] == userId):
+            services,userInfo = Services.get_services_from_user(userId,True)
             qualification = Qualification.get_user_qualification_avg(userId)
     except:
         return jsonify({"info":"Invalid Token"})
@@ -111,6 +112,22 @@ def get_user_services(userId):
         if(not services):
             return jsonify({"info":"Invalid Id"})
         return jsonify(services,userInfo,qualification)
+
+
+@services.route('/getUserServices/<int:userId>')
+def get_user_services(userId):
+    token = request.headers["authorization"].split(' ')[1]
+    try:
+        if (validate_token(token,True)["userId"]):
+            services,userInfo = Services.get_services_from_user(userId,False)
+            qualification = Qualification.get_user_qualification_avg(userId)
+    except:
+        return jsonify({"info":"Invalid Token"})
+    else:
+        if(not services):
+            return jsonify({"info":"Invalid Id"})
+        return jsonify(services,userInfo,qualification)
+
 
 
 @services.route('/report/<int:serviceId>/<userToReport>/<int:reportId>')
