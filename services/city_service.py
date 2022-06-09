@@ -1,4 +1,5 @@
 from schemas import City as CitySchema
+from models.City import City as CityModel
 from utils.db import get_session
 from sqlalchemy.sql import text
 
@@ -19,15 +20,14 @@ class CityService:
 
     @classmethod
     def get_all_cities_from_department(cls, departmentId: int) ->  list[CitySchema] or None:
-        cities :list[CitySchema]
         with get_session() as session:
-            cities_info_query = session.execute(text("SELECT * FROM city WHERE departmentid = :departmentId").bindparams(
-                departmentId = departmentId
-            ))
-            for city in cities_info_query.scalars():
-                cities.append(**city.__dict__)
+            cities_info_query = session.execute(session.query(CityModel).filter(CityModel.departmentid == departmentId))
+            """for city in cities_info_query.scalars():
+                cities.append(**city.__dict__)"""
+            cities: list[CitySchema] = [CitySchema(**city.__dict__) for city in cities_info_query.scalars()]
             if(not cities):
                 return None
             return cities
+
 
 

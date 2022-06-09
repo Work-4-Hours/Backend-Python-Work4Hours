@@ -6,6 +6,6 @@ from .department_schema import Department
 class City(BaseModel):
     cityid: int = Field(...)
     name: str = Field(...)
-    departmentid: Department = Field(...)
+    departmentid: int = Field(...)
 
 
