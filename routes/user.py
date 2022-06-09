@@ -35,10 +35,10 @@ def get_department():
     return jsonify({"departments":departments})
 
 
-@user.route('/cities/<int:departmentId>', methods=['GET'])
-def user_location(departmentId=5):
-    cities = City.get_all_cities_from_department(departmentId)
-    return jsonify({"cities":cities})
+# @user.route('/cities/<int:departmentId>', methods=['GET'])
+# def user_location(departmentId=5):
+#     cities = City.get_all_cities_from_department(departmentId)
+#     return jsonify({"cities":cities})
     
 
 @user.route('/registry', methods=['POST'])

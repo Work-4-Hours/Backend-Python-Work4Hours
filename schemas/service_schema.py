@@ -1,7 +1,6 @@
 from pydantic import Field
 from .base_schema import BaseModel
 from .city_schema import City
-from .user_schema import UserModel
 
 
 class IndexService(BaseModel):

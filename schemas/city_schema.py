@@ -7,3 +7,5 @@ class City(BaseModel):
     cityid: int = Field(...)
     name: str = Field(...)
     departmentid: Department = Field(...)
+
+
