@@ -143,4 +143,14 @@ def changeUserInfo():
         return {"info":'Invalid token'}
     else:
         return {"info":"User updated"} 
+        
+
+@user.route('/validate')
+def validate():
+    token = request.headers["authorization"].split(' ')[1]
+    decryptedToken = validate_token(token,True)
+    if(decryptedToken == dict):
+        return {"info":"Valid token"}
+    return {"info":"Invalid token"}
+        
 
