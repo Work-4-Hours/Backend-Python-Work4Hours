@@ -71,6 +71,7 @@ def get_user():
 def allow_changes(email,password):
     token = request.headers["authorization"].split(' ')[1]
     response = ""
+    print(token)
     try:
         if (validate_token(token,True)['userId']):
             userRes = Users.get_existant_user(email,password,1)
@@ -149,7 +150,7 @@ def changeUserInfo():
 def validate():
     token = request.headers["authorization"].split(' ')[1]
     decryptedToken = validate_token(token,True)
-    if(decryptedToken == dict):
+    if(type(decryptedToken) == dict):
         return {"info":"Valid token"}
     return {"info":"Invalid token"}
         
