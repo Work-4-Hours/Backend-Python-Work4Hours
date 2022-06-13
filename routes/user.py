@@ -29,10 +29,10 @@ def user_login():
         }
 
 
-@user.route('/departments', methods=['GET'])
-def get_department():
-    departments = Departament.getAllDepartments()
-    return jsonify({"departments":departments})
+# @user.route('/departments', methods=['GET'])
+# def get_department():
+#     departments = Departament.getAllDepartments()
+#     return jsonify({"departments":departments})
 
 
 # @user.route('/cities/<int:departmentId>', methods=['GET'])
@@ -99,6 +99,3 @@ def appeal_service():
 
 
     
-    
-
- 

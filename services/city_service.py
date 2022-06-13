@@ -22,12 +22,9 @@ class CityService:
     def get_all_cities_from_department(cls, departmentId: int) ->  list[CitySchema] or None:
         with get_session() as session:
             cities_info_query = session.execute(session.query(CityModel).filter(CityModel.departmentid == departmentId))
-            """for city in cities_info_query.scalars():
-                cities.append(**city.__dict__)"""
-            cities: list[CitySchema] = [CitySchema(**city.__dict__) for city in cities_info_query.scalars()]
+            cities: list[CitySchema] = [CitySchema(**city.__dict__).dict() for city in cities_info_query.scalars()]
             if(not cities):
                 return None
             return cities
-
 
 

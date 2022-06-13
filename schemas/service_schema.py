@@ -5,11 +5,11 @@ from .city_schema import City
 
 class IndexService(BaseModel):
     serviceid: int = Field(...)
-    categoryid: int = Field(...)
+    categoryid: str = Field(...)
     name: str = Field(...)
     price: int = Field(...)
     picture: str = Field(...)
-    city: City = Field(...)
+    city: int = Field(None)
     user: str = Field(...)
 
 

@@ -23,13 +23,17 @@ class UserService:
     def login(cls, user: UserLogin) -> UserModel or None:
         with get_session() as session:
             db_data = session.execute(session.query(Users).filter(Users.email == user.email))
-            user_data = db_data.scalars().one()
-            loged_user = UserModel(**user_data.__dict__,exist= True)
-            session.commit()
-            if(cls.decrypt_password(user.password,loged_user.password)):
-                return loged_user
-            else:
+            try:
+                user_data = db_data.scalars().one()
+                loged_user = UserModel(**user_data.__dict__,exist= True)
+                session.commit()
+            except:
                 return None
+            else:
+                if(cls.decrypt_password(user.password,loged_user.password)):
+                    return loged_user
+                else:
+                    return None
 
 
     @classmethod

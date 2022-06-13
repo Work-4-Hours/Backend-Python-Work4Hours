@@ -2,6 +2,6 @@ from pydantic import Field
 from .base_schema import BaseModel
 
 class Department(BaseModel):
-    departmentid: int = Field(...)
+    departamentid: int = Field(...)
     name: str = Field(...)
 

@@ -8,4 +8,4 @@ def get_city(departmentId):
     cities = CityService.get_all_cities_from_department(departmentId)
     if(not cities):
         return {"info":"Can`t find cities"}
-    return cities
+    return {"citites": cities}

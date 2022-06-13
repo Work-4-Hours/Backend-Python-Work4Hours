@@ -9,6 +9,7 @@ from utils.db import db
 from routes.user import user
 from routes.services import services
 from routes.city import cities
+from routes.department import departments
 
 # Se importan las rutas
 
@@ -35,5 +36,6 @@ def after_request(response):
 app.register_blueprint(user)
 app.register_blueprint(services)
 app.register_blueprint(cities)
+app.register_blueprint(departments)
 
 # Se obtienen los blueprints de rutas

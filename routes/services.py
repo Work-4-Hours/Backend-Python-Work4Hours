@@ -5,15 +5,16 @@ from models.Services import Services
 from models.Qualification import Qualification
 from utils.db import db
 from jwt_Functions import validate_token
+from schemas import ServiceModel
+from services.service_service import ServicesService
 
 
 services = Blueprint('service_routes', __name__)
 
 @services.route('/')
 def show_services():
-    services = Services.get_index_page_services()
-    print(services)
-    return jsonify(services)
+    services = ServicesService.get_index_services()
+    return {"services":services}
 
 
 @services.route('/avg', methods=["POST"])
@@ -25,17 +26,8 @@ def get_average():
 
 @services.route('/serviceRegistry', methods=['POST'])
 def service_registry():
-    serviceInfo = request.json
-    categories = serviceInfo["categories"]
-    name = serviceInfo["name"]
-    statuses = serviceInfo["statuses"]
-    type = serviceInfo["type"]
-    price = serviceInfo["price"]
-    description = serviceInfo["description"]
-    photo = serviceInfo["photo"]
-    user = serviceInfo["user"]
-
-    service = Services.create_service(categories,name,statuses,type,price,description,photo,user)
+    serviceInfo =ServiceModel(**request.json)
+    service = ServicesService.create_service(serviceInfo)
     return jsonify(service)
 
 
