@@ -80,6 +80,11 @@ class Services(db.Model):
             serviceId = serviceInfo.idservicio
         ))
         reports = db_reports.scalars().one()
+        db_qualification = db.session.execute(text("SELECT avg(c.calificacion) FROM calificacion c WHERE idservicio = :serviceId").bindparams(
+            serviceId = serviceInfo.idservicio
+        ))
+        qualification = db_qualification.scalars().one()
+        db.session.commit()
         token = str(write_token({"userId" : serviceInfo.usuario})).split("'")[1]
         service = {
             "name": serviceInfo.nombre,
@@ -94,7 +99,8 @@ class Services(db.Model):
             "description":serviceInfo.descripcion,
             "category": serviceInfo.categorias.idcategoria,
             "status": serviceInfo.estado,
-            "reports": reports
+            "reports": reports,
+            "qualification":qualification
         }
         return service
 
