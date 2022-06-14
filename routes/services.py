@@ -4,7 +4,7 @@ from flask import Blueprint, json, jsonify, request, session, render_template
 from models.Services import Services
 from models.Qualification import Qualification
 from utils.db import db
-from jwt_Functions import validate_token
+from jwt_Functions import validate_token, write_token
 from schemas import ServiceModel
 from services.service_service import ServicesService
 
