@@ -11,14 +11,14 @@ class Qualification(db.Model):
     __tablename__ = 'qualification'
     qualificationid = db.Column(db.Integer, primary_key=True)
     qualification = db.Column(db.Integer, nullable=False)
-    userid = db.Column(db.Integer, nullable=False)
+    userId = db.Column(db.Integer, nullable=False)
     serviceid = db.Column(db.Integer, ForeignKey('service.serviceid'), nullable=False)
     service = relationship(Services, backref=backref('service', uselist=True))
 
 
-    def __init__(self, qualification, userid, serviceid):
+    def __init__(self, qualification, userId, serviceid):
         self.qualification = qualification
-        self.userid = userid
+        self.userId = userId
         self.serviceid = serviceid
 
 

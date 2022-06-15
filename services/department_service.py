@@ -10,6 +10,7 @@ class Department:
         with get_session() as session:
             departments_query = session.execute(session.query(Departament))
             deparments : list[DepartmentSchema] = [DepartmentSchema(**department.__dict__).dict() for department in departments_query.scalars()]
+            session.commit()
             if(not deparments):
                 return None
             return deparments

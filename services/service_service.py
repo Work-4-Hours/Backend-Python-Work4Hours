@@ -1,3 +1,4 @@
+from sqlalchemy.sql import text
 from schemas import IndexService, ServiceModel
 from models.Services import Services
 from utils.db import get_session
@@ -20,13 +21,27 @@ class ServicesService:
             services: list[IndexService] = []
             services_query = session.execute(session.query(Services).filter(Services.qualification > 3.9).filter(Services.status == 1))
             for service_info in services_query.scalars():
-                user = write_token({"userId": service_info.__dict__["user"]})
-                del service_info.__dict__["user"]
-                services.append(IndexService(**service_info.__dict__,user=user).dict())
+                service_info.__dict__["user"] = write_token({"userId": service_info.__dict__["user"]})
+                services.append(IndexService(**service_info.__dict__).dict())
             if(not services):
                 return None
+            session.commit()
             return services
 
-    # @classmethod
-    # def without_keys(cls, d: dict, keys: dict):
-    #     return {x: dict[x] for x in d if x not in keys}
+    @classmethod
+    def search_services(cls, serviceName: str) -> list[IndexService] or None:
+        with get_session() as session:
+            services: list[IndexService] = []
+            services_query = session.execute(session.query(Services).filter(Services.name.like('{}%'.format(serviceName))).filter(Services.status == 1))
+            for service_info in services_query.scalars():
+                service_info.__dict__["user"] = write_token({"userId": service_info.__dict__["user"]})
+                services.append(IndexService(**service_info.__dict__).dict())
+            if(not services):
+                return None
+            session.commit()
+            return services
+
+    @classmethod
+    def delete_service(cls, serviceid: int) -> bool or None:
+        with get_session() as session:
+            pass

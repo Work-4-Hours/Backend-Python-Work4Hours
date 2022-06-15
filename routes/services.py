@@ -1,6 +1,4 @@
-from distutils.log import info
-from re import search
-from flask import Blueprint, json, jsonify, request, session, render_template
+from flask import Blueprint, jsonify, request
 from models.Services import Services
 from models.Qualification import Qualification
 from utils.db import db
@@ -14,6 +12,8 @@ services = Blueprint('service_routes', __name__)
 @services.route('/')
 def show_services():
     services = ServicesService.get_index_services()
+    if(not services):
+        return {"info": "There`s no services"}
     return {"services":services}
 
 
@@ -34,17 +34,18 @@ def service_registry():
 @services.route('/searchServices', methods=['POST'])
 def search():
     serviceInfo = request.json  
-    nombre = serviceInfo["serviceName"]
-    serviceInfo = Services.search_all_services_info(nombre)
+    serviceInfo = ServicesService.search_services(serviceInfo["serviceName"])
+    if(not serviceInfo):
+        return {"info": "There`s no services"}
     return jsonify(serviceInfo)
-    
 
-@services.route('/addQualification')
-def add_qualification():
-    serviceInfo = request.json
-    calificacion = serviceInfo["calificacion"]
-    serviceInfo = Qualification.add_qualification(calificacion)
-    return jsonify(serviceInfo)
+
+# @services.route('/addQualification')
+# def add_qualification():
+#     serviceInfo = request.json
+#     calificacion = serviceInfo["calificacion"]
+#     serviceInfo = Qualification.add_qualification(calificacion)
+#     return jsonify(serviceInfo)
 
 
 @services.route('/deleteService/<int:serviceId>')

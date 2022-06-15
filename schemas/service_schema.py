@@ -11,6 +11,7 @@ class IndexService(BaseModel):
     picture: str = Field(...)
     city: int = Field(None)
     user: str = Field(...)
+    qualification: float = Field(None)
 
 
 class ServiceModel(IndexService):
@@ -18,5 +19,4 @@ class ServiceModel(IndexService):
     status: int = Field(...)
     type: str = Field(...)
     appeals: int = Field(...)
-    qualification: float = Field(...)
 

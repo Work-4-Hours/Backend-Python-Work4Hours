@@ -12,6 +12,7 @@ class CityService:
                 userId = userId
             ))
             city_info_result = city_info_query.scalars().one()
+            session.commit()
             if(not city_info_result):
                 return None
             city = CitySchema(**city_info_result.__dict__)
@@ -23,6 +24,7 @@ class CityService:
         with get_session() as session:
             cities_info_query = session.execute(session.query(CityModel).filter(CityModel.departmentid == departmentId))
             cities: list[CitySchema] = [CitySchema(**city.__dict__).dict() for city in cities_info_query.scalars()]
+            session.commit()
             if(not cities):
                 return None
             return cities

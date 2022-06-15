@@ -10,6 +10,7 @@ from routes.user import user
 from routes.services import services
 from routes.city import cities
 from routes.department import departments
+from routes.qualification import qualifications
 
 # Se importan las rutas
 
@@ -37,5 +38,6 @@ app.register_blueprint(user)
 app.register_blueprint(services)
 app.register_blueprint(cities)
 app.register_blueprint(departments)
+app.register_blueprint(qualifications)
 
 # Se obtienen los blueprints de rutas
