@@ -1,6 +1,7 @@
 from pydantic import Field
+
 from .base_schema import BaseModel
-from .city_schema import City
+from .user_schema import UserModel
 
 
 class IndexService(BaseModel):
@@ -19,4 +20,15 @@ class ServiceModel(IndexService):
     status: int = Field(...)
     type: str = Field(...)
     appeals: int = Field(...)
+    userInfo: UserModel = Field(None)
 
+
+class ServiceUpdate(BaseModel):
+    serviceid: int = Field(...)
+    categoryid: str = Field(...)
+    name: str = Field(...)
+    price: int = Field(...)
+    picture: str = Field(...)
+    description: str = Field(...)
+    type: str = Field(...)
+    status: int = Field(...)

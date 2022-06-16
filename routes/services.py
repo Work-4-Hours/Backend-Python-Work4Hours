@@ -48,25 +48,20 @@ def search():
 #     return jsonify(serviceInfo)
 
 
-@services.route('/deleteService/<int:serviceId>')
-def delete_service(serviceId = None):
-    isDeleted = Services.delete_service(serviceId)
-    return jsonify(isDeleted)
+# @services.route('/deleteService/<int:serviceId>')
+# def delete_service(serviceId = None):
+#     isDeleted = Services.delete_service(serviceId)
+#     return jsonify(isDeleted)
 
 
 @services.route('/updateService', methods=["POST"])
 def update_service():
-    serviceNewInfo = request.json
-    sId = serviceNewInfo["id"]
-    sName = serviceNewInfo["name"]
-    sType = serviceNewInfo["type"]
-    sPhoto = serviceNewInfo["photo"]
-    sPrice = serviceNewInfo["price"]
-    sCategory = serviceNewInfo["category"]
-    sDescription = serviceNewInfo["description"]
-    sStatus = serviceNewInfo["status"]
-    res = Services.update_service_info(sId,sCategory,sName,sPhoto,sType,sPrice,sDescription,sStatus)
-    return jsonify(res)
+    serviceNewInfo = ServiceModel(**request.json)
+    updateRes = Services.update_service_info(serviceNewInfo)
+    if(not updateRes):
+        return {"info": False}
+    return updateRes.json()
+
 
 @services.route('/serviceInfo/<int:serviceId>',methods=["POST"])
 def get_service_info(serviceId):

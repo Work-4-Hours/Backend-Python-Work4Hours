@@ -15,6 +15,7 @@ class ServicesService:
             session.commit()
         return new_service
 
+
     @classmethod
     def get_index_services(cls) -> list[IndexService] or None:
         with get_session() as session:
@@ -27,6 +28,7 @@ class ServicesService:
                 return None
             session.commit()
             return services
+
 
     @classmethod
     def search_services(cls, serviceName: str) -> list[IndexService] or None:
@@ -41,7 +43,40 @@ class ServicesService:
             session.commit()
             return services
 
+
     @classmethod
-    def delete_service(cls, serviceid: int) -> bool or None:
+    def update_service(cls, service_info: ServiceModel) -> ServiceModel or None: 
         with get_session() as session:
-            pass
+            try:
+                session.execute(text("UPDATE servicios SET idcategoria = :categoryId, nombre = :name, foto = :photo, tipo= :type, precio = :price, descripcion= :description, estado = :status WHERE idservicio = :serviceId").bindparams(
+                    categoryId = service_info.categoryid,
+                    serviceId = service_info.serviceid,
+                    name = service_info.name,
+                    photo = service_info.picture,
+                    type = service_info.type,
+                    price = service_info.price,
+                    description = service_info.description,
+                    status = service_info.status,
+                    )
+                )
+                session.commit()
+            except:
+                return None
+            else:
+                return service_info
+
+    
+    @classmethod
+    def get_service_info(cls, service_id: int) -> ServiceModel:
+        with get_session() as session:
+            service_query = session.execute(session.query(Services).filter(Services.serviceid == service_id))
+            service_data = service_query.scalars().one()
+            user_query = session.execute(text("SELECT u.name, u.lastName, u.phoneNumber, u.email, u.picture, u.birthDate, u.color, u.status"))
+            service_info = ServiceModel(**service_data.__dict__)
+
+            
+
+
+    
+
+
