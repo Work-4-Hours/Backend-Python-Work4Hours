@@ -92,7 +92,7 @@ def appeal_service():
     serviceId = userInfo["serviceId"]
     description = userInfo["description"]
     Appeals(description,serviceId)
-    return True
+    return {"info":True}
     
 
 
