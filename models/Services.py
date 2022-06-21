@@ -1,5 +1,5 @@
 from utils.db import db
-from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, update, delete
+from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, true, update, delete
 from sqlalchemy.sql import text
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql.expression import func
@@ -135,12 +135,13 @@ class Services(db.Model):
         if(not total_halls):
             db.session.execute(delete(Services).filter(cls.idservicio == serviceId))
             db.session.commit()
+            return True
         else:
             db.session.execute(text("DELETE sa.*, s.* FROM servicios s INNER JOIN sala sa ON s.idservicio = sa.servicio WHERE sa.servicio = :serviceId").bindparams(
                 serviceId = serviceId
             ))
             db.session.commit()
-        return True
+            return None
 
 
     @classmethod        

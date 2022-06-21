@@ -23,9 +23,9 @@ class Qualification(db.Model):
         self.idservicio = idservicio
 
     @classmethod
-    def add_qualification(cls,qualification:float,userId:int,serviceId:int) -> None:
+    def add_qualification(cls, qualification: float, userId: int, serviceId: int) -> None:
         prevQualification = db.session.execute(db.session.query(Qualification).filter(cls.idservicio == serviceId).filter(cls.idusuario == userId))
-        isQualified = bool(prevQualification.scalars())
+        isQualified = prevQualification.scalars().first()
         if (not isQualified):
             newQualification = Qualification(qualification,userId,serviceId)
             db.session.add(newQualification)
@@ -39,7 +39,7 @@ class Qualification(db.Model):
         
 
     @classmethod
-    def get_qualifications_average(self,serviceId : int) -> dict:
+    def get_qualifications_average(self, serviceId : int) -> dict:
         averageQualification = {}
         query = db.session.query(func.avg(self.calificacion)).filter(self.idservicio == serviceId)
         result = db.session.execute(query)

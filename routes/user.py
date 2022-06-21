@@ -21,7 +21,6 @@ def user_login():
     password = userInfo["password"]
 
     userInfo = Users.login(email,password)
-    print(userInfo)
     try:
         userId = validate_token(userInfo["token"],True)
         qualification = Qualification.get_user_qualification_avg(userId["userId"])
@@ -85,7 +84,7 @@ def allow_changes(email,password):
         return jsonify(response)
 
 
-@user.route('/appeal')
+@user.route('/appeal', methods=["POST"])
 def appeal_service():
     token = request.headers["authorization"]
     userInfo = request.json 
