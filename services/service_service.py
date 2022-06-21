@@ -1,5 +1,5 @@
 from sqlalchemy.sql import text
-from schemas import IndexService, ServiceModel
+from schemas import IndexService, ServiceModel, UserModel
 from models.Services import Services
 from utils.db import get_session
 from jwt_Functions import write_token
@@ -72,7 +72,8 @@ class ServicesService:
             service_query = session.execute(session.query(Services).filter(Services.serviceid == service_id))
             service_data = service_query.scalars().one()
             user_query = session.execute(text("SELECT u.name, u.lastName, u.phoneNumber, u.email, u.picture, u.birthDate, u.color, u.status"))
-            service_info = ServiceModel(**service_data.__dict__)
+            user_data = user_query.scalars().first()
+            service_info = ServiceModel(**service_data.__dict__,userInfo= UserModel(**user_data.__dict__))
 
             
 
