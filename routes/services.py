@@ -1,6 +1,7 @@
 from distutils.log import info
 from re import search
 from flask import Blueprint, json, jsonify, request, session, render_template
+from models.Categories import Categories
 from models.Services import Services
 from models.Report import Report
 from models.Services_reports import Services_reports
@@ -23,6 +24,14 @@ def get_average():
     getInfo = request.json
     average = Qualification.get_qualifications_average(getInfo["userId"])
     return jsonify(average)
+
+
+@services.route('/categServices/<int:categId>')
+def get_categories_services(categId):
+    services = Services.get_categories_services(categId)
+    if(not services):
+        return {"info": False}
+    return services
 
 
 @services.route('/serviceRegistry', methods=['POST'])

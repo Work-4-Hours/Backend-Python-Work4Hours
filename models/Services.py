@@ -59,7 +59,7 @@ class Services(db.Model):
 
     
     @classmethod
-    def get_service_info(cls,serviceId):
+    def get_service_info(cls, serviceId: int):
         service = ""
         query = db.session.execute(db.session.query(Services).filter(cls.idservicio == serviceId))
         for serviceInfo in query.scalars():
@@ -68,7 +68,7 @@ class Services(db.Model):
         db.session.commit()
         if(type(user) != dict):
             return None
-        return {"serviceInfo":service,"serviceUser":user}
+        return {"serviceInfo": service, "serviceUser": user}
 
 
     @classmethod
@@ -113,8 +113,8 @@ class Services(db.Model):
 
 
     @classmethod
-    def search_all_services_info(cls,nombreServicio: str) -> list :
-        services = []
+    def search_all_services_info(cls,nombreServicio: str) -> list[dict] :
+        services: list[dict] = []
         query = db.session.query(Services).filter(cls.nombre.like('%{}%'.format(nombreServicio))).filter(cls.estado == 1)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
@@ -131,7 +131,6 @@ class Services(db.Model):
             serviceId = serviceId
         ))
         total_halls = db_hall.scalars()
-        print(total_halls)
         if(not total_halls):
             db.session.execute(delete(Services).filter(cls.idservicio == serviceId))
             db.session.commit()
@@ -182,5 +181,20 @@ class Services(db.Model):
             if(type(userInfo) != dict):
                 return None,None
             return services,userInfo
+
+    
+    @classmethod
+    def get_categories_services(cls, categoryId: int) -> list[dict] or None:
+        services: list[dict] = []
+        query = db.session.execute(db.session.query(Services).filter(Services.idcategoria == categoryId).limit(20))
+        for service_info in query.scalars():
+            services.append(cls.extract_service_info(service_info))
+        if(not services):
+            return None
+        return services
+        
+
+
+
 
 
