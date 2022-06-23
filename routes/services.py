@@ -65,9 +65,10 @@ def update_service():
 
 @services.route('/serviceInfo/<int:serviceId>',methods=["POST"])
 def get_service_info(serviceId):
-    serviceInfo = Services.get_service_info(serviceId)
-    serviceQualification = Qualification.get_qualifications_average(serviceId)
-    return jsonify(serviceInfo,serviceQualification)
+    serviceInfo = ServicesService.get_service_info(serviceId)
+    if (not serviceInfo):
+        return {"info":"Error"}
+    return jsonify(serviceInfo.dict())
 
 
 @services.route('/getUserServices/<int:userId>')

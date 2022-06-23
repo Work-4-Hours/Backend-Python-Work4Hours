@@ -1,7 +1,6 @@
 from datetime import date
 from pydantic import Field
 from .base_schema import BaseModel
-from .service_schema import ServiceModel
 
 
 class UserLogin(BaseModel):
@@ -25,6 +24,17 @@ class UserModel(UserSignup):
     status: int = Field(...)
     userId: int = Field(...)
     exist: bool = Field(None)
-    services: ServiceModel = Field(None)
+
+
+class UserProfile(BaseModel):
+    userId: int = Field(...)
+    name: str = Field(...)
+    lastName: str = Field(...)
+    phoneNumber: int = Field(...)
+    picture: str = Field(...)
+    color: str = Field(...)
+    qualification: float = Field(None)
+
+
 
 
