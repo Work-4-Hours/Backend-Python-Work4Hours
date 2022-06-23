@@ -11,7 +11,7 @@ class Hall(db.Model):
     fechafin = db.Column(db.Date, nullable= False)
     horainicio = db.Column(db.String(5), nullable= False)
     horafin = db.Column(db.String(5), nullable=False)
-    idservicio = db.Column(db.Integer, ForeignKey('servicios.idservicios'), nullable=False)
+    servicio = db.Column(db.Integer, ForeignKey('servicios.idservicios'), nullable=False)
     servicios = relationship(Services, backref = backref('sala', uselist = True))
 
 

@@ -1,8 +1,10 @@
+from ast import arg
 import base64
 import string
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select, true
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.sql import text
 from models.City import City
 from models.Rol import Rol
 from models.Statuses import Statuses
@@ -153,9 +155,9 @@ class Users(db.Model):
             else:
                 result = db.session.execute(select(Users).filter(self.idusuario == userId))
         except UnicodeDecodeError as err:
-            raise(err)
+            return(err)
         except ConnectionAbortedError as err:
-            raise(err)
+            return(err)
         else:
             for usersInfo in result.scalars():
                 user = {
@@ -168,4 +170,25 @@ class Users(db.Model):
                 }
             db.session.commit()
             return user
+
+
+    @classmethod
+    def update_user_info(cls, userId:str ,**args: any) -> None:
+        db.session.execute(text(
+            """UPDATE usuarios 
+            SET nombres = :name,
+            apellidos= :lastName, 
+            direccion = :address,
+            celular = :phoneNumber
+            WHERE idusuario = :userId"""
+        ).bindparams(
+            name = args["name"],
+            lastName = args["lastName"],
+            address = args["address"],
+            phoneNumber = args["phoneNumber"],
+            userId = userId
+        ))
+        db.session.commit()
+
+
 

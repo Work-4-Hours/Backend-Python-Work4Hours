@@ -1,4 +1,5 @@
 from cgitb import text
+from csv import QUOTE_ALL
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, update
 from sqlalchemy.sql import text
@@ -22,13 +23,23 @@ class Qualification(db.Model):
         self.idservicio = idservicio
 
     @classmethod
-    def add_qualification(self,qualification:float,userId:int,serviceId:int) -> None:
-        newQualification = Qualification(qualification,userId,serviceId)
-        db.session.add(newQualification)
+    def add_qualification(cls, qualification: float, userId: int, serviceId: int) -> None:
+        prevQualification = db.session.execute(db.session.query(Qualification).filter(cls.idservicio == serviceId).filter(cls.idusuario == userId))
+        isQualified = prevQualification.scalars().first()
+        if (not isQualified):
+            newQualification = Qualification(qualification,userId,serviceId)
+            db.session.add(newQualification)
+        else:
+            db.session.execute(text("UPDATE calificacion SET calificacion = :qualification WHERE idusuario = :userId and idservicio = :serviceId").bindparams(
+                userId = userId,
+                qualification = qualification,
+                serviceId = serviceId
+            ))
         db.session.commit()
+        
 
     @classmethod
-    def get_qualifications_average(self,serviceId : int) -> dict:
+    def get_qualifications_average(self, serviceId : int) -> dict:
         averageQualification = {}
         query = db.session.query(func.avg(self.calificacion)).filter(self.idservicio == serviceId)
         result = db.session.execute(query)

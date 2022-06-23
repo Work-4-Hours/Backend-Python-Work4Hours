@@ -5,7 +5,7 @@ from models.Users import Users
 from models.Report import Report
 
 
-class User_services(db.Model):
+class User_reports(db.Model):
     __tablename__ = 'usuario_reportes'
     id = db.Column(db.Integer, primary_key=True)
     idusuario = db.Column(db.Integer, ForeignKey('usuarios.idusuario'),nullable=False)

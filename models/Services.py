@@ -1,8 +1,9 @@
 from unittest import result
 from utils.db import db
-from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, update, delete
+from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, true, update, delete
 from sqlalchemy.sql import text
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.sql.expression import func
 from models.Categories import Categories
 from models.Statuses import Statuses
 from models.Users import Users
@@ -57,20 +58,31 @@ class Services(db.Model):
         return services
     
     @classmethod
-    def get_service_info(cls,serviceId):
+    def get_service_info(cls, serviceId: int):
         service = ""
         query = db.session.execute(db.session.query(Services).filter(cls.idservicio == serviceId))
         for serviceInfo in query.scalars():
             service = cls.extract_service_info(serviceInfo)
         user = Users.search_user_info(service['user'])
         db.session.commit()
-        return {"serviceInfo":service,"serviceUser":user}
+        if(type(user) != dict):
+            return None
+        return {"serviceInfo": service, "serviceUser": user}
 
     @classmethod
     def extract_service_info(cls,serviceInfo):
         service = {}
         departmentId,cityId,cityName = City.get_city_info(serviceInfo.idservicio,serviceInfo.usuario)
         departmentName = Departament.get_department_info(departmentId)
+        db_reports = db.session.execute(text("SELECT COUNT(id) FROM servicio_reportes WHERE idservicio = :serviceId").bindparams(
+            serviceId = serviceInfo.idservicio
+        ))
+        reports = db_reports.scalars().one()
+        db_qualification = db.session.execute(text("SELECT avg(c.calificacion) FROM calificacion c WHERE idservicio = :serviceId").bindparams(
+            serviceId = serviceInfo.idservicio
+        ))
+        qualification = db_qualification.scalars().one()
+        db.session.commit()
         token = str(write_token({"userId" : serviceInfo.usuario})).split("'")[1]
         service = {
             "name": serviceInfo.nombre,
@@ -83,7 +95,10 @@ class Services(db.Model):
             "department_name":departmentName,
             "user": token,
             "description":serviceInfo.descripcion,
-            "category": serviceInfo.categorias.idcategoria
+            "category": serviceInfo.categorias.idcategoria,
+            "status": serviceInfo.estado,
+            "reports": reports,
+            "qualification":qualification
         }
         return service
 
@@ -96,8 +111,8 @@ class Services(db.Model):
 
 
     @classmethod
-    def search_all_services_info(cls,nombreServicio: str) -> list :
-        services = []
+    def search_all_services_info(cls,nombreServicio: str) -> list[dict] :
+        services: list[dict] = []
         query = db.session.query(Services).filter(cls.nombre.like('%{}%'.format(nombreServicio))).filter(cls.estado == 1)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
@@ -110,9 +125,20 @@ class Services(db.Model):
 
     @classmethod
     def delete_service(cls,serviceId:int):
-        db.session.execute(delete(Services).filter(cls.idservicio == serviceId))
-        db.session.commit()
-        return True
+        db_hall = db.session.execute(text("SELECT * FROM sala WHERE servicio = :serviceId").bindparams(
+            serviceId = serviceId
+        ))
+        total_halls = db_hall.scalars()
+        if(not total_halls):
+            db.session.execute(delete(Services).filter(cls.idservicio == serviceId))
+            db.session.commit()
+            return True
+        else:
+            db.session.execute(text("DELETE sa.*, s.* FROM servicios s INNER JOIN sala sa ON s.idservicio = sa.servicio WHERE sa.servicio = :serviceId").bindparams(
+                serviceId = serviceId
+            ))
+            db.session.commit()
+            return None
 
 
     @classmethod        
@@ -134,21 +160,39 @@ class Services(db.Model):
 
         
     @classmethod
-    def get_services_from_user(cls,userId:int):
+    def get_services_from_user(cls, userId: int, isOwn: bool):
         try:
             userInfo = Users.search_user_info(userId)
             services = []
-            result = db.session.execute(db.session.query(Services).filter(cls.usuario == userId))
+            if(isOwn):
+                result = db.session.execute(db.session.query(Services).filter(cls.usuario == userId))
+            else:
+                result = db.session.execute(db.session.query(Services).filter(cls.usuario == userId).filter(cls.estado == 1))
             for serviceInfo in result.scalars():
                 services.append(
                     cls.extract_service_info(serviceInfo)
                 )
             db.session.commit()
         except:
-            raise Exception("Invalid Id")
+            return None,None
         else:
+            if(type(userInfo) != dict):
+                return None,None
             return services,userInfo
 
-
     
+    @classmethod
+    def get_categories_services(cls, categoryId: int) -> list[dict] or None:
+        services: list[dict] = []
+        query = db.session.execute(db.session.query(Services).filter(Services.idcategoria == categoryId).limit(20))
+        for service_info in query.scalars():
+            services.append(cls.extract_service_info(service_info))
+        if(not services):
+            return None
+        return services
         
+
+
+
+
+

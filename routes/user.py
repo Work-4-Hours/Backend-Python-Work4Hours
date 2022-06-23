@@ -6,6 +6,7 @@ from models.Departament import Departament
 from models.City import City
 from models.Appeals import Appeals
 from utils.db import db
+from sqlalchemy.sql import text
 from jwt_Functions import validate_token, write_token
 from email_service import email_client
 
@@ -20,7 +21,6 @@ def user_login():
     password = userInfo["password"]
 
     userInfo = Users.login(email,password)
-    print(userInfo)
     try:
         userId = validate_token(userInfo["token"],True)
         qualification = Qualification.get_user_qualification_avg(userId["userId"])
@@ -70,6 +70,7 @@ def get_user():
 def allow_changes(email,password):
     token = request.headers["authorization"].split(' ')[1]
     response = ""
+    print(token)
     try:
         if (validate_token(token,True)['userId']):
             userRes = Users.get_existant_user(email,password,1)
@@ -83,7 +84,7 @@ def allow_changes(email,password):
         return jsonify(response)
 
 
-@user.route('/appeal')
+@user.route('/appeal', methods=["POST"])
 def appeal_service():
     token = request.headers["authorization"]
     userInfo = request.json 
@@ -91,7 +92,7 @@ def appeal_service():
     serviceId = userInfo["serviceId"]
     description = userInfo["description"]
     Appeals(description,serviceId)
-    return True
+    return {"info":True}
     
 
 
@@ -112,4 +113,44 @@ def recover_password(email):
     <p>Recovery password request<p>
     """)
     return "Se envió el email"
+
+
+@user.route('/changePassword/<newPassword>')
+def change_password(newPassword):
+    token = request.headers["authorization"].split(' ')[1]
+    try:
+        userInfo = validate_token(token,True)
+        db.session.execute(text('UPDATE usuarios SET contrasenna = :newPassword WHERE idusuario = :id').bindparams(
+            newPassword = newPassword,
+            id = userInfo['userId']
+        ))
+        db.session.commit()
+    except:
+        return "Invalid token"
+    else:
+        return True
+
+
+@user.route('/updateUser', methods=["POST"])
+def changeUserInfo():
+    token = request.headers["authorization"].split(' ')[1]
+    userInfo = request.json
+    try:
+        decryptedToken = validate_token(token,True)
+        if(decryptedToken["userId"]):
+            Users.update_user_info(decryptedToken["userId"],**userInfo)
+    except:
+        return {"info":'Invalid token'}
+    else:
+        return {"info":"User updated"} 
+        
+
+@user.route('/validate')
+def validate():
+    token = request.headers["authorization"].split(' ')[1]
+    decryptedToken = validate_token(token,True)
+    if(type(decryptedToken) == dict):
+        return {"info":"Valid token"}
+    return {"info":"Invalid token"}
+        
 
