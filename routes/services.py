@@ -144,3 +144,11 @@ def report(serviceId,userToReport,reportId):
         return {"info":"Invalid token"}
     else:
         return {"info":"Report completed"}
+
+
+@services.route('/filter/<filterParam>/<int:filterType>')
+def filter(filterParam, filterType):
+    services = Services.use_filters(filterParam,filterType)
+    if(not services):
+        return {"info": "No results", "services": False}
+    return {"info": "Results", "services": services}

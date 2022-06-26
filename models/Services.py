@@ -1,3 +1,4 @@
+from unittest import result
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, true, update, delete
 from sqlalchemy.sql import text
@@ -183,4 +184,20 @@ class Services(db.Model):
                 return None,None
             return services,userInfo
 
-
+    @classmethod
+    def use_filters(cls, filterParam: str, filterType: int) -> list[dict]:
+        result: list[dict] = []
+        sql = ""
+        if(filterType == 1):
+            sql = db.session.query(Services).filter(Services.idcategoria == filterParam).filter(Services.estado == 1)
+        elif(filterType == 2):
+            sql = db.session.query(Services).filter(Services.tipo == filterParam).filter(Services.estado == 1)
+    
+        for service in db.session.execute(sql).scalars():
+            result.append(
+                cls.extract_service_info(service)
+            )
+        db.session.commit()
+        if(not result):
+            return None
+        return result
