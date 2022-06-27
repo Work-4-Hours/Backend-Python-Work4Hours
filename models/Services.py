@@ -128,20 +128,9 @@ class Services(db.Model):
 
     @classmethod
     def delete_service(cls,serviceId:int):
-        db_hall = db.session.execute(text("SELECT * FROM sala WHERE servicio = :serviceId").bindparams(
-            serviceId = serviceId
-        ))
-        total_halls = db_hall.scalars()
-        if(not total_halls):
-            db.session.execute(delete(Services).filter(cls.idservicio == serviceId))
-            db.session.commit()
-            return True
-        else:
-            db.session.execute(text("DELETE sa.*, s.* FROM servicios s INNER JOIN sala sa ON s.idservicio = sa.servicio WHERE sa.servicio = :serviceId").bindparams(
-                serviceId = serviceId
-            ))
-            db.session.commit()
-            return None
+        db.session.execute(delete(Services).filter(cls.idservicio == serviceId))
+        db.session.commit()
+        return True
 
 
     @classmethod        
