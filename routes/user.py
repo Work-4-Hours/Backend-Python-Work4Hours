@@ -70,16 +70,16 @@ def get_user():
 def allow_changes(email,password):
     token = request.headers["authorization"].split(' ')[1]
     response = ""
-    print(token)
+    print(validate_token(token,True)["userId"])
     try:
-        if (validate_token(token,True)['userId']):
-            userRes = Users.get_existant_user(email,password,1)
+        if (validate_token(token,True)["userId"]):
+            userRes = Users.get_user(email,password)
             if(userRes[1].get('userId')):
                 response = True
             else:
                 response = False 
     except:
-        raise Exception("Invalid Token")
+        return("Invalid Token")
     else:
         return jsonify(response)
 
