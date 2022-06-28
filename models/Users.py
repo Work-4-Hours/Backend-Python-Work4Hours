@@ -1,6 +1,10 @@
 from ast import arg
 import base64
 import string
+from typing_extensions import Self
+from unittest import result
+
+from requests import ReadTimeout
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select, true
 from sqlalchemy.orm import relationship, backref
@@ -88,7 +92,17 @@ class Users(db.Model):
             user, userId = self.get_user_info(result.scalars())
         db.session.commit()
         return user, userId
-        
+
+    @classmethod
+    def get_user(cls, email: str, password: str, type: int):
+        userId: dict = {}
+        user: dict = {}
+        result = db.session.execute(db.session.query(Users).filter(Users.correo == email))
+        if(not result):
+            return None
+        if(cls.decrypt_password(password, result["contrasenna"])):
+            user, userId = cls.get_user_info(result)
+            return user, userId
 
     @classmethod
     def get_user_info(self,result):
@@ -129,7 +143,7 @@ class Users(db.Model):
     #Function to look for a user in DB and take his info:
     @classmethod
     def login(self,email:str , password:str):
-        user, userId = self.get_existant_user(email,password,1)
+        user, userId = self.get_user(email,password,1)
         if (user):
             token = str(write_token(userId)).split("'")[1]
             return {"token":token, "info":user, "exist": True}

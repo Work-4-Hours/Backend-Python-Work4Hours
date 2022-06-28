@@ -1,3 +1,4 @@
+from collections import UserList
 from unittest import result
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, Float, ForeignKey, String, select, insert, true, update, delete
@@ -10,6 +11,7 @@ from models.Users import Users
 from models.Appeals import Appeals
 from models.Departament import Departament
 from models.City import City
+from models.Visibility import Visibilty
 from jwt_Functions import write_token
 
 
@@ -31,7 +33,9 @@ class Services(db.Model):
     usuarios = relationship(Users, backref=backref('servicios', uselist=True))
     apelacion = db.Column(db.Integer,ForeignKey('apelaciones.idapelacion'),nullable=True)
     apelaciones = relationship(Appeals, backref= backref('servicios'),uselist= True)
-    calificacion = db.Column(db.Float(), nullable=False)
+    calificacion = db.Column(db.Float(), nullable= False)
+    visibilidad = db.Column(db.Integer, ForeignKey('visibilidad.id'), nullable = False)
+    estado_visibilidad = relationship(Visibilty, backref = backref('servicios'), uselist= True)
 
 
 
@@ -173,13 +177,13 @@ class Services(db.Model):
             return services,userInfo
 
     @classmethod
-    def use_filters(cls, filterParam: str, filterType: int) -> list[dict]:
+    def use_filters(cls, filter_param: str, filter_type: int, service_name: str) -> list[dict]:
         result: list[dict] = []
         sql = ""
-        if(filterType == 1):
-            sql = db.session.query(Services).filter(Services.idcategoria == filterParam).filter(Services.estado == 1)
-        elif(filterType == 2):
-            sql = db.session.query(Services).filter(Services.tipo == filterParam).filter(Services.estado == 1)
+        if(filter_type == 1):
+            sql = db.session.query(Services).filter(Services.idcategoria == filter_param).filter(Services.estado == 1).filter(Services.nombre == service_name)
+        elif(filter_type == 2):
+            sql = db.session.query(Services).filter(Services.tipo == filter_param).filter(Services.estado == 1).filter(Services.nombre == service_name)
     
         for service in db.session.execute(sql).scalars():
             result.append(
