@@ -107,12 +107,16 @@ def recover_password(email):
             "rol":user.rol
         }
     token = write_token(userInfo)
-    email_client.send_email(email,"Access link to recover password",message=f'http://localhost:3000/password/forgotten?id={token}',
-    format = 
-    """
+    email_client.send_email(
+    email,"Access link to recover password",
+    message=f"""
     <h1>Work4Hours</h1>
-    <p>Recovery password request<p>
-    """)
+    <h3>Recover password request</h3>
+    <p>Acces to the following link to recover password<p>
+    <a href="http://work4hours.pages.dev/password/forgotten?id={token}">Click para recuperar contraseña</a>
+    """,
+    format = "html"
+    )
     return "Se envió el email"
 
 
