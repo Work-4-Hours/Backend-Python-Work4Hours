@@ -1,6 +1,3 @@
-from ast import arg
-import base64
-import string
 from utils.db import db
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select, true
 from sqlalchemy.orm import relationship, backref
@@ -80,39 +77,48 @@ class Users(db.Model):
 
 
     #function to validate existance of an user in db: 
-    @classmethod
-    def get_existant_user(self,email:str , password:str , type:int) :
-        userId = {}
-        user = {}
-        result = db.session.execute(db.session.query(Users).filter(Users.correo == email))
-        if(result.scalars() and type == 1):
-            if(self.get_decrypted_user_password(password,email)):
-                user, userId = self.get_user_info(result.scalars())
-        elif(result.scalars() and type == 0):
-            user, userId = self.get_user_info(result.scalars())
-        db.session.commit()
-        return user, userId
-        
+    # @classmethod
+    # def get_existant_user(self,email:str , password:str , type:int) :
+    #     userId = {}
+    #     user = {}
+    #     result = db.session.execute(db.session.query(Users).filter(Users.correo == email))
+    #     if(result.scalars() and type == 1):
+    #         if(self.get_decrypted_user_password(password,email)):
+    #             user, userId = self.get_user_info(result.scalars())
+    #     elif(result.scalars() and type == 0):
+    #         user, userId = self.get_user_info(result.scalars())
+    #     db.session.commit()
+    #     return user, userId
 
     @classmethod
-    def get_user_info(self,result):
-        userId = {}
-        user = {}
-        for userInfo in result:
-            user = {
-                "name" : userInfo.nombres,
-                "lastName" : userInfo.apellidos,
-                "email" : userInfo.correo,
-                "status" : userInfo.estado,
-                "userPicture" : userInfo.fotop,
-                "phoneNumber": userInfo.celular,
-                "birthDate": userInfo.fnac,
-                "color": userInfo.color,
-            },
-            userId = {
-                "userId" : userInfo.idusuario,
-                "rol" : userInfo.rol
-            }
+    def get_user(cls, email: str, password: str):
+        userId: dict = {}
+        user: dict = {}
+        result = db.session.execute(db.session.query(Users).filter(Users.correo == email))
+        scalar = result.scalars().first()
+        if(not scalar):
+            return None
+        if(cls.decrypt_password(password, scalar.contrasenna)):
+            user, userId = cls.get_user_info(scalar)
+            return user, userId
+
+
+    @classmethod
+    def get_user_info(self,userInfo):
+        user = {
+            "name" : userInfo.nombres,
+            "lastName" : userInfo.apellidos,
+            "email" : userInfo.correo,
+            "status" : userInfo.estado,
+            "userPicture" : userInfo.fotop,
+            "phoneNumber": userInfo.celular,
+            "birthDate": userInfo.fnac,
+            "color": userInfo.color,
+        },
+        userId = {
+            "userId" : userInfo.idusuario,
+            "rol" : userInfo.rol
+        }
         return user,userId
 
 
@@ -120,7 +126,7 @@ class Users(db.Model):
     #Function to decide if the user must be registered
     @classmethod
     def validate_registry(self,nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad,color):
-        user,userId = self.get_existant_user(correo,contrasenna,0)
+        user = self.get_user(correo,contrasenna)
         if(user):
             return {"exist": "User already exist"}
         else:
@@ -135,7 +141,7 @@ class Users(db.Model):
     #Function to look for a user in DB and take his info:
     @classmethod
     def login(self,email:str , password:str):
-        user, userId = self.get_existant_user(email,password,1)
+        user, userId = self.get_user(email,password)
         if (user):
             token = str(write_token(userId)).split("'")[1]
             return {"token":token, "info":user, "exist": True}

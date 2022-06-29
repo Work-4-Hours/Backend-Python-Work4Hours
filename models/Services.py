@@ -10,6 +10,7 @@ from models.Users import Users
 from models.Appeals import Appeals
 from models.Departament import Departament
 from models.City import City
+from models.Visibility import Visibilty
 from jwt_Functions import write_token
 
 
@@ -31,7 +32,9 @@ class Services(db.Model):
     usuarios = relationship(Users, backref=backref('servicios', uselist=True))
     apelacion = db.Column(db.Integer,ForeignKey('apelaciones.idapelacion'),nullable=True)
     apelaciones = relationship(Appeals, backref= backref('servicios'),uselist= True)
-    calificacion = db.Column(db.Float(), nullable=False)
+    calificacion = db.Column(db.Float(), nullable= False)
+    visibilidad = db.Column(db.Integer, ForeignKey('visibilidad.id'), nullable = False)
+    estado_visibilidad = relationship(Visibilty, backref = backref('servicios'), uselist= True)
 
 
     def __init__(self, idcategoria, nombre, estado, tipo, precio, descripcion, foto, usuario):
@@ -125,20 +128,9 @@ class Services(db.Model):
 
     @classmethod
     def delete_service(cls,serviceId:int):
-        db_hall = db.session.execute(text("SELECT * FROM sala WHERE servicio = :serviceId").bindparams(
-            serviceId = serviceId
-        ))
-        total_halls = db_hall.scalars()
-        if(not total_halls):
-            db.session.execute(delete(Services).filter(cls.idservicio == serviceId))
-            db.session.commit()
-            return True
-        else:
-            db.session.execute(text("DELETE sa.*, s.* FROM servicios s INNER JOIN sala sa ON s.idservicio = sa.servicio WHERE sa.servicio = :serviceId").bindparams(
-                serviceId = serviceId
-            ))
-            db.session.commit()
-            return None
+        db.session.execute(delete(Services).filter(cls.idservicio == serviceId))
+        db.session.commit()
+        return True
 
 
     @classmethod        
@@ -180,6 +172,23 @@ class Services(db.Model):
                 return None,None
             return services,userInfo
 
+    @classmethod
+    def use_filters(cls, filter_param: str, filter_type: int, service_name: str) -> list[dict]:
+        result: list[dict] = []
+        sql = ""
+        if(filter_type == 1):
+            sql = db.session.query(Services).filter(Services.idcategoria == filter_param).filter(Services.estado == 1).filter(Services.nombre == service_name)
+        elif(filter_type == 2):
+            sql = db.session.query(Services).filter(Services.tipo == filter_param).filter(Services.estado == 1).filter(Services.nombre == service_name)
+    
+        for service in db.session.execute(sql).scalars():
+            result.append(
+                cls.extract_service_info(service)
+            )
+        db.session.commit()
+        if(not result):
+            return None
+        return result
     
     @classmethod
     def get_categories_services(cls, categoryId: int) -> list[dict] or None:
