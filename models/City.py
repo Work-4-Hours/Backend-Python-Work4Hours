@@ -22,16 +22,17 @@ class City(db.Model):
         departmentId = ""
         cityId = ""
         cityName = ""
-        cityInfoQuery = text("""SELECT c.iddepartamento, c.idciudad, c.nombre FROM ciudades c WHERE c.idciudad = (SELECT u.ciudad FROM usuarios u where u.idusuario = :userId)""").bindparams(
+        cityInfoQuery = text("""SELECT d.nombre, c.iddepartamento, c.idciudad, c.nombre FROM ciudades c INNER JOIN departmentos d on d.iddepartamento = c.iddepartamento WHERE c.idciudad = (SELECT u.ciudad FROM usuarios u where u.idusuario = :userId)""").bindparams(
             userId = userId
         )
         cityInfo = db.session.execute(cityInfoQuery)
         for city in cityInfo:
-            departmentId = city[0]
-            cityId = city[1]
-            cityName = city[2]
+            departmentName = city[0]
+            departmentId = city[1]
+            cityId = city[2]
+            cityName = city[3]
         db.session.commit()
-        return departmentId,cityId,cityName
+        return departmentId,cityId,cityName,departmentName
 
 
     @classmethod
