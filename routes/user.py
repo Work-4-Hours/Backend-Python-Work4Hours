@@ -1,3 +1,4 @@
+from email import message
 from flask import Blueprint, json, jsonify, request
 from models.Qualification import Qualification
 from models.Services import Services
@@ -69,19 +70,19 @@ def get_user():
 @user.route('/allowChanges/<email>/<password>', methods=["POST"])
 def allow_changes(email,password):
     token = request.headers["authorization"].split(' ')[1]
-    response = ""
-    print(validate_token(token,True)["userId"])
+    response: bool = False
     try:
         if (validate_token(token,True)["userId"]):
             userRes = Users.get_user(email,password)
-            if(userRes[1].get('userId')):
+            if(userRes):
                 response = True
-            else:
-                response = False 
     except:
-        return("Invalid Token")
+        raise Exception("Invalid token")
     else:
-        return jsonify(response)
+        if not response:
+            return jsonify({"response": response, "message":"Invalid user"})
+        return jsonify({"response": response, "message":"Valid user"})
+        
 
 
 @user.route('/appeal', methods=["POST"])
