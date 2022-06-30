@@ -40,12 +40,13 @@ class Services(db.Model):
     def __init__(self, idcategoria, nombre, estado, tipo, precio, descripcion, foto, usuario):
         self.idcategoria=idcategoria
         self.nombre=nombre
-        self.estado=estado
+        self.estado= 1
         self.tipo=tipo
         self.precio=precio
         self.descripcion=descripcion
         self.foto=foto
         self.usuario=usuario
+        self.visibilidad = estado
 
 
     @classmethod
@@ -101,7 +102,8 @@ class Services(db.Model):
             "category": serviceInfo.categorias.idcategoria,
             "status": serviceInfo.estado,
             "reports": reports,
-            "qualification":qualification
+            "qualification":qualification,
+            "visibility": serviceInfo.visibilidad
         }
         return service
 
@@ -136,7 +138,7 @@ class Services(db.Model):
     @classmethod        
     def update_service_info(cls,serviceId:int , categoryId:str , name:str , photo:str, type:str , price:int , description:str, status:int):
         db.session.execute(
-            text("UPDATE servicios SET idcategoria = :categoryId, nombre = :name, foto = :photo, tipo= :type, precio = :price, descripcion= :description, estado = :status WHERE idservicio = :serviceId").bindparams(
+            text("UPDATE servicios SET idcategoria = :categoryId, nombre = :name, foto = :photo, tipo= :type, precio = :price, descripcion= :description, visibilidad = :status WHERE idservicio = :serviceId").bindparams(
                     categoryId = categoryId,
                     serviceId = serviceId,
                     name = name,

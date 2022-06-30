@@ -7,6 +7,7 @@ from models.Report import Report
 from models.Services_reports import Services_reports
 from models.User_reports import User_reports
 from models.Qualification import Qualification
+from models.Visibility import Visibilty
 from utils.db import db
 from jwt_Functions import validate_token
 
@@ -161,3 +162,9 @@ def filter(filter_param, filter_type, service_name):
     if(not services):
         return {"info": "No results", "services": False}
     return {"info": "Results", "services": services}
+
+
+@services.route('/categories')
+def categories():
+    categories = Categories.get_categories()
+    return jsonify(categories)

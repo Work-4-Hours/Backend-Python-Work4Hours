@@ -10,3 +10,15 @@ class Categories(db.Model):
 
     def __init__(self,nombrecateg):
         self.nombrecateg=nombrecateg
+
+    @classmethod
+    def get_categories(cls) -> list[dict]:
+        categories: list[dict] = []
+        query = db.session.execute(db.session.query(Categories))
+        for category in query.scalars():
+            categories.append({
+                "categoryName": category.nombrecateg,
+                "categId": category.idcategoria
+            }
+            )
+        return categories
