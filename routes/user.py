@@ -87,9 +87,7 @@ def allow_changes(email,password):
 
 @user.route('/appeal', methods=["POST"])
 def appeal_service():
-    token = request.headers["authorization"]
     userInfo = request.json 
-    email = userInfo["email"]
     serviceId = userInfo["serviceId"]
     description = userInfo["description"]
     Appeals(description,serviceId)

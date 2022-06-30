@@ -76,7 +76,7 @@ class Services(db.Model):
     def extract_service_info(cls,serviceInfo):
         service = {}
         departmentId,cityId,cityName,departmentName = City.get_city_info(serviceInfo.idservicio,serviceInfo.usuario)
-        # departmentName = Departament.get_department_info(departmentId)
+        print(departmentId)
         db_reports = db.session.execute(text("SELECT COUNT(id) FROM servicio_reportes WHERE idservicio = :serviceId").bindparams(
             serviceId = serviceInfo.idservicio
         ))

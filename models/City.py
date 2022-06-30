@@ -22,7 +22,7 @@ class City(db.Model):
         departmentId = ""
         cityId = ""
         cityName = ""
-        cityInfoQuery = text("""SELECT d.nombre, c.iddepartamento, c.idciudad, c.nombre FROM ciudades c INNER JOIN departmentos d on d.iddepartamento = c.iddepartamento WHERE c.idciudad = (SELECT u.ciudad FROM usuarios u where u.idusuario = :userId)""").bindparams(
+        cityInfoQuery = text("""SELECT d.nombre, c.iddepartamento, c.idciudad, c.nombre FROM ciudades c INNER JOIN departamentos d on d.iddepartamento = c.iddepartamento WHERE c.idciudad = (SELECT u.ciudad FROM usuarios u where u.idusuario = :userId)""").bindparams(
             userId = userId
         )
         cityInfo = db.session.execute(cityInfoQuery)
