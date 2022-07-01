@@ -1,4 +1,4 @@
-from utils.db import db
+from utils.db import db, get_session
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select, true
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import text
@@ -92,15 +92,17 @@ class Users(db.Model):
 
     @classmethod
     def get_user(cls, email: str, password: str):
-        userId: dict = {}
-        user: dict = {}
-        result = db.session.execute(db.session.query(Users).filter(Users.correo == email))
-        scalar = result.scalars().first()
-        if(not scalar):
-            return None
-        if(cls.decrypt_password(password, scalar.contrasenna)):
-            user, userId = cls.get_user_info(scalar)
-            return user, userId
+        with get_session() as session:
+            userId: dict = {}
+            user: dict = {}
+            result = session.execute(session.query(Users).filter(Users.correo == email))
+            scalar = result.scalars().first()
+            session.commit()
+            if(not scalar):
+                return None
+            if(cls.decrypt_password(password, scalar.contrasenna)):
+                user, userId = cls.get_user_info(scalar)
+                return user, userId
 
 
     @classmethod
@@ -126,15 +128,16 @@ class Users(db.Model):
     #Function to decide if the user must be registered
     @classmethod
     def validate_registry(self,nombres,apellidos,celular,direccion,correo,contrasenna,fnac,fotop,ciudad,color):
-        user = self.get_user(correo,contrasenna)
-        if(user):
-            return {"exist": "User already exist"}
-        else:
-            encryptedPassword = Users.encrypt_password(contrasenna)
-            newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad,color)
-            db.session.add(newUser)
-            db.session.commit()
-            return {"exist": "new User created"}
+        with get_session() as session:
+            user = self.get_user(correo,contrasenna)
+            if(user):
+                return {"exist": "User already exist"}
+            else:
+                encryptedPassword = Users.encrypt_password(contrasenna)
+                newUser = Users(nombres,apellidos,celular,direccion,correo,encryptedPassword,fnac,fotop,ciudad,color)
+                session.add(newUser)
+                session.commit()
+                return {"exist": "new User created"}
 
 
 
@@ -153,48 +156,50 @@ class Users(db.Model):
     #Function to search all users in the app
     @classmethod
     def search_user_info(self,userId):
-        user = {}
-        try:           
-            if (type(userId) != int):
-                decryptedUserId = validate_token(userId,True)
-                result = db.session.execute(select(Users).filter(self.idusuario == decryptedUserId.get('userId')))
+        with get_session() as session:
+            user = {}
+            try:           
+                if (type(userId) != int):
+                    decryptedUserId = validate_token(userId,True)
+                    result = session.execute(select(Users).filter(self.idusuario == decryptedUserId.get('userId')))
+                else:
+                    result = session.execute(select(Users).filter(self.idusuario == userId))
+            except UnicodeDecodeError as err:
+                return(err)
+            except ConnectionAbortedError as err:
+                return(err)
             else:
-                result = db.session.execute(select(Users).filter(self.idusuario == userId))
-        except UnicodeDecodeError as err:
-            return(err)
-        except ConnectionAbortedError as err:
-            return(err)
-        else:
-            for usersInfo in result.scalars():
-                user = {
-                    "name" : usersInfo.nombres,
-                    "lastName" : usersInfo.apellidos,
-                    "photo": usersInfo.fotop,
-                    "phoneNumber": usersInfo.celular,
-                    "email": usersInfo.correo,
-                    "color": usersInfo.color,
-                }
-            db.session.commit()
-            return user
+                for usersInfo in result.scalars():
+                    user = {
+                        "name" : usersInfo.nombres,
+                        "lastName" : usersInfo.apellidos,
+                        "photo": usersInfo.fotop,
+                        "phoneNumber": usersInfo.celular,
+                        "email": usersInfo.correo,
+                        "color": usersInfo.color,
+                    }
+                session.commit()
+                return user
 
 
     @classmethod
     def update_user_info(cls, userId:str ,**args: any) -> None:
-        db.session.execute(text(
-            """UPDATE usuarios 
-            SET nombres = :name,
-            apellidos= :lastName, 
-            direccion = :address,
-            celular = :phoneNumber
-            WHERE idusuario = :userId"""
-        ).bindparams(
-            name = args["name"],
-            lastName = args["lastName"],
-            address = args["address"],
-            phoneNumber = args["phoneNumber"],
-            userId = userId
-        ))
-        db.session.commit()
+        with get_session() as session:
+            session.execute(text(
+                """UPDATE usuarios 
+                SET nombres = :name,
+                apellidos= :lastName, 
+                direccion = :address,
+                celular = :phoneNumber
+                WHERE idusuario = :userId"""
+            ).bindparams(
+                name = args["name"],
+                lastName = args["lastName"],
+                address = args["address"],
+                phoneNumber = args["phoneNumber"],
+                userId = userId
+            ))
+            session.commit()
 
 
 

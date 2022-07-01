@@ -1,4 +1,4 @@
-from utils.db import db
+from utils.db import db, get_session
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.sql import text
 from sqlalchemy.orm import relationship, backref
@@ -19,33 +19,34 @@ class City(db.Model):
 
     @classmethod
     def get_city_info(self,serviceId:Integer,userId:Integer):
-        departmentId = ""
-        cityId = ""
-        cityName = ""
-        cityInfoQuery = text("""SELECT d.nombre, c.iddepartamento, c.idciudad, c.nombre FROM ciudades c INNER JOIN departamentos d on d.iddepartamento = c.iddepartamento WHERE c.idciudad = (SELECT u.ciudad FROM usuarios u where u.idusuario = :userId)""").bindparams(
-            userId = userId
-        )
-        cityInfo = db.session.execute(cityInfoQuery)
-        for city in cityInfo:
-            departmentName = city[0]
-            departmentId = city[1]
-            cityId = city[2]
-            cityName = city[3]
-        db.session.commit()
-        return departmentId,cityId,cityName,departmentName
+        with get_session() as session:
+            departmentId = ""
+            cityId = ""
+            cityName = ""
+            cityInfo = session.execute(text("""SELECT d.nombre, c.iddepartamento, c.idciudad, c.nombre FROM ciudades c INNER JOIN departamentos d on d.iddepartamento = c.iddepartamento WHERE c.idciudad = (SELECT u.ciudad FROM usuarios u where u.idusuario = :userId)""").bindparams(
+                userId = userId
+            ))
+            for city in cityInfo:
+                departmentName = city[0]
+                departmentId = city[1]
+                cityId = city[2]
+                cityName = city[3]
+            session.commit()
+            return departmentId,cityId,cityName,departmentName
 
 
     @classmethod
     def get_all_cities_from_department(self,departmentId:Integer):
-        cities = []
-        citiesQuery = db.session.query(City).filter(self.iddepartamento == departmentId)
-        citiesResult = db.session.execute(citiesQuery)
-        for city in citiesResult.scalars():
-            cities.append(
-                {
-                    "name":city.nombre,
-                    "id":city.idciudad
-                }
-            )
-        db.session.commit()
-        return cities
+        with get_session() as session:
+            cities = []
+            citiesQuery = session.query(City).filter(self.iddepartamento == departmentId)
+            citiesResult = session.execute(citiesQuery)
+            for city in citiesResult.scalars():
+                cities.append(
+                    {
+                        "name":city.nombre,
+                        "id":city.idciudad
+                    }
+                )
+            session.commit()
+            return cities

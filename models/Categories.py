@@ -1,4 +1,4 @@
-from utils.db import db
+from utils.db import db, get_session
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
 
@@ -13,12 +13,14 @@ class Categories(db.Model):
 
     @classmethod
     def get_categories(cls) -> list[dict]:
-        categories: list[dict] = []
-        query = db.session.execute(db.session.query(Categories))
-        for category in query.scalars():
-            categories.append({
-                "categoryName": category.nombrecateg,
-                "categId": category.idcategoria
-            }
-            )
-        return categories
+        with get_session() as session:
+            categories: list[dict] = []
+            query = session.execute(db.session.query(Categories))
+            for category in query.scalars():
+                categories.append({
+                    "categoryName": category.nombrecateg,
+                    "categId": category.idcategoria
+                }
+                )
+            session.commit()
+            return categories

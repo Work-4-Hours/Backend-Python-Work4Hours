@@ -6,7 +6,7 @@ from models.Users import Users
 from models.Departament import Departament
 from models.City import City
 from models.Appeals import Appeals
-from utils.db import db
+from utils.db import db, get_session
 from sqlalchemy.sql import text
 from jwt_Functions import validate_token, write_token
 from email_service import email_client
@@ -97,41 +97,44 @@ def appeal_service():
 
 @user.route('/recoverPassword/<email>')
 def recover_password(email):
-    userInfo = {}
-    db_user = db.session.execute(db.session.query(Users).filter(Users.correo == email))
-    for user in db_user.scalars():
-        userInfo={
-            "userId":user.idusuario,
-            "rol":user.rol
-        }
-    token = write_token(userInfo)
-    email_client.send_email(
-    email,"Access link to recover password",
-    message=f"""
-    <h1>Work4Hours</h1>
-    <h3>Recover password request</h3>
-    <p>Acces to the following link to recover password<p>
-    <a href="http://work4hours.pages.dev/password/forgotten?id={token}">Click para recuperar contraseña</a>
-    """,
-    format = "html"
-    )
-    return "Se envió el email"
+    with get_session() as session:
+        userInfo = {}
+        db_user = session.execute(session.query(Users).filter(Users.correo == email))
+        for user in db_user.scalars():
+            userInfo={
+                "userId":user.idusuario,
+                "rol":user.rol
+            }
+        token = write_token(userInfo)
+        email_client.send_email(
+        email,"Access link to recover password",
+        message=f"""
+        <h1>Work4Hours</h1>
+        <h3>Recover password request</h3>
+        <p>Acces to the following link to recover password<p>
+        <a href="http://work4hours.pages.dev/password/forgotten?id={token}">Click para recuperar contraseña</a>
+        """,
+        format = "html"
+        )
+        session.commit()
+        return "Se envió el email"
 
 
 @user.route('/changePassword/<newPassword>')
 def change_password(newPassword):
     token = request.headers["authorization"].split(' ')[1]
-    try:
-        userInfo = validate_token(token,True)
-        db.session.execute(text('UPDATE usuarios SET contrasenna = :newPassword WHERE idusuario = :id').bindparams(
-            newPassword = newPassword,
-            id = userInfo['userId']
-        ))
-        db.session.commit()
-    except:
-        return "Invalid token"
-    else:
-        return True
+    with get_session() as session:
+        try:
+            userInfo = validate_token(token,True)
+            session.execute(text('UPDATE usuarios SET contrasenna = :newPassword WHERE idusuario = :id').bindparams(
+                newPassword = newPassword,
+                id = userInfo['userId']
+            ))
+            session.commit()
+        except:
+            return "Invalid token"
+        else:
+            return True
 
 
 @user.route('/updateUser', methods=["POST"])

@@ -1,14 +1,10 @@
-from distutils.log import info
-from re import search
 from flask import Blueprint, json, jsonify, request, session, render_template
 from models.Categories import Categories
 from models.Services import Services
-from models.Report import Report
 from models.Services_reports import Services_reports
 from models.User_reports import User_reports
 from models.Qualification import Qualification
-from models.Visibility import Visibilty
-from utils.db import db
+from utils.db import get_session
 from jwt_Functions import validate_token
 
 
@@ -140,20 +136,21 @@ def get_user_services(userId):
 
 @services.route('/report/<int:serviceId>/<userToReport>/<int:reportId>')
 def report(serviceId,userToReport,reportId):
-    token = request.headers["authorization"].split(' ')[1]
-    try:
-        userInfo = validate_token(token,True)
-        userToReportInfo = validate_token(userToReport,True)
-        if(userInfo["userId"] and userToReportInfo["userId"]):
-            newServiceReport = Services_reports(reportId,serviceId)
-            newUserReport = User_reports(userToReportInfo["userId"],reportId)
-            db.session.add(newServiceReport)
-            db.session.add(newUserReport)
-            db.session.commit()
-    except:
-        return {"info":"Invalid token"}
-    else:
-        return {"info":"Report completed"}
+    with get_session() as session:
+        token = request.headers["authorization"].split(' ')[1]
+        try:
+            userInfo = validate_token(token,True)
+            userToReportInfo = validate_token(userToReport,True)
+            if(userInfo["userId"] and userToReportInfo["userId"]):
+                newServiceReport = Services_reports(reportId,serviceId)
+                newUserReport = User_reports(userToReportInfo["userId"],reportId)
+                session.add(newServiceReport)
+                session.add(newUserReport)
+                session.commit()
+        except:
+            return {"info":"Invalid token"}
+        else:
+            return {"info":"Report completed"}
 
 
 @services.route('/filter/<filter_param>/<int:filter_type>/<service_name>')

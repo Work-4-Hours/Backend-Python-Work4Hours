@@ -1,4 +1,4 @@
-from utils.db import db
+from utils.db import db, get_session
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql.functions import func
@@ -22,6 +22,8 @@ class Services_reports(db.Model):
 
     @classmethod
     def get_service_reports(cls, serviceId: int) -> int:
-        db_reports = db.session.execute(db.session.query(func.count(cls.id)).filter(cls.idservicio == serviceId))
-        reports = db_reports.scalars().one()
-        return reports
+        with get_session() as session:
+            db_reports = session.execute(session.query(func.count(cls.id)).filter(cls.idservicio == serviceId))
+            reports = db_reports.scalars().one()
+            session.commit()
+            return reports

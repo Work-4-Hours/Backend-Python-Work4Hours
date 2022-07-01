@@ -1,4 +1,4 @@
-from utils.db import db
+from utils.db import db, get_session
 from sqlalchemy import Table, Column, Integer, ForeignKey, String, select
 from sqlalchemy.orm import relationship, backref
 
@@ -12,27 +12,29 @@ class Departament(db.Model):
 
     
     @classmethod
-    def get_department_info(self,departmentId:Integer):
-        departmentName = ""
-        departmentQuery = db.session.query(self.nombre).filter(self.iddepartamento == departmentId)
-        departmentInfo = db.session.execute(departmentQuery)
-        for department in departmentInfo.scalars():
-            departmentName = department
-        db.session.commit()
-        return departmentName
+    def get_department_info(cls,departmentId:Integer):
+        with get_session() as session:
+            departmentName = ""
+            departmentQuery = session.query(Departament.nombre).filter(Departament.iddepartamento == departmentId)
+            departmentInfo = session.execute(departmentQuery)
+            for department in departmentInfo.scalars():
+                departmentName = department
+            session.commit()
+            return departmentName
 
 
     @classmethod
-    def get_all_departments(self):
-        departments = []
-        departmentsQuery = db.session.query(Departament)
-        departmentsInfo = db.session.execute(departmentsQuery)
-        for department in departmentsInfo.scalars():
-            departments.append(
-                {
-                    "id":department.iddepartamento,
-                    "name":department.nombre
-                }
-            )
-        db.session.commit()
-        return departments
+    def get_all_departments(cls):
+        with get_session() as session:
+            departments = []
+            departmentsQuery = session.query(Departament)
+            departmentsInfo = session.execute(departmentsQuery)
+            for department in departmentsInfo.scalars():
+                departments.append(
+                    {
+                        "id":department.iddepartamento,
+                        "name":department.nombre
+                    }
+                )
+            session.commit()
+            return departments
