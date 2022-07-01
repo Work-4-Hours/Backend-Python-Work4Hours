@@ -133,6 +133,9 @@ class Services(db.Model):
     @classmethod
     def delete_service(cls,serviceId:int):
         with get_session() as session:
+            session.execute(text("DELETE FROM calificacion WHERE idservicio = :serviceId").bindparams(
+                serviceId= serviceId
+            ))
             session.execute(delete(Services).filter(cls.idservicio == serviceId))
             session.commit()
             return True
