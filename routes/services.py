@@ -156,7 +156,7 @@ def report(serviceId,userToReport,reportId):
         return {"info":"Report completed"}
 
 
-@services.route('/filter/<filterParam>/<int:filterType>/<service_name>')
+@services.route('/filter/<filter_param>/<int:filter_type>/<service_name>')
 def filter(filter_param, filter_type, service_name):
     services = Services.use_filters(filter_param, filter_type, service_name)
     if(not services):

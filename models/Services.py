@@ -52,7 +52,7 @@ class Services(db.Model):
     @classmethod
     def get_index_page_services(cls) -> list :
         services = []
-        query = db.session.query(Services).filter(cls.calificacion > 3.9).filter(cls.estado == 1).limit(20)
+        query = db.session.query(Services).filter(cls.calificacion > 3.9).filter(cls.estado == 1).filter(cls.visibilidad == 1).limit(20)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
             services.append(
@@ -77,7 +77,6 @@ class Services(db.Model):
     def extract_service_info(cls,serviceInfo):
         service = {}
         departmentId,cityId,cityName,departmentName = City.get_city_info(serviceInfo.idservicio,serviceInfo.usuario)
-        print(departmentId)
         db_reports = db.session.execute(text("SELECT COUNT(id) FROM servicio_reportes WHERE idservicio = :serviceId").bindparams(
             serviceId = serviceInfo.idservicio
         ))
@@ -118,7 +117,7 @@ class Services(db.Model):
     @classmethod
     def search_all_services_info(cls,nombreServicio: str) -> list[dict] :
         services: list[dict] = []
-        query = db.session.query(Services).filter(cls.nombre.like('%{}%'.format(nombreServicio))).filter(cls.estado == 1)
+        query = db.session.query(Services).filter(cls.nombre.like('%{}%'.format(nombreServicio))).filter(cls.estado == 1).filter(cls.visibilidad == 1)
         result = db.session.execute(query)
         for serviceInfo in result.scalars():
             services.append(
@@ -161,7 +160,7 @@ class Services(db.Model):
             if(isOwn):
                 result = db.session.execute(db.session.query(Services).filter(cls.usuario == userId))
             else:
-                result = db.session.execute(db.session.query(Services).filter(cls.usuario == userId).filter(cls.estado == 1))
+                result = db.session.execute(db.session.query(Services).filter(cls.usuario == userId).filter(cls.estado == 1).filter(cls.visibilidad == 1))
             for serviceInfo in result.scalars():
                 services.append(
                     cls.extract_service_info(serviceInfo)
@@ -179,9 +178,9 @@ class Services(db.Model):
         result: list[dict] = []
         sql = ""
         if(filter_type == 1):
-            sql = db.session.query(Services).filter(Services.idcategoria == filter_param).filter(Services.estado == 1).filter(Services.nombre == service_name)
+            sql = db.session.query(Services).filter(Services.idcategoria == filter_param).filter(Services.visibilidad == 1).filter(Services.estado == 1).filter(Services.nombre.like('%{}%'.format(service_name)))
         elif(filter_type == 2):
-            sql = db.session.query(Services).filter(Services.tipo == filter_param).filter(Services.estado == 1).filter(Services.nombre == service_name)
+            sql = db.session.query(Services).filter(Services.tipo == filter_param).filter(Services.visibilidad == 1).filter(Services.estado == 1).filter(Services.nombre.like('%{}%'.format(service_name)))
     
         for service in db.session.execute(sql).scalars():
             result.append(
